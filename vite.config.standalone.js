@@ -2,17 +2,22 @@ import { defineConfig } from "vite"
 import react from "@vitejs/plugin-react"
 
 export default defineConfig({
-  base: "./",  // ✅ important for GitHub Pages
+  base: "./",
   plugins: [react()],
   build: {
     lib: {
       entry: "./src/standalone.js",
-      name: "BrandNovaEditor",
-      fileName: (format) => `brand-nova-editor.${format}.js`,
+      name: "NovaEditor",
+      fileName: (format) => `nova-editor.${format}.js`,
       formats: ["umd"],
     },
     outDir: "dist-standalone",
     emptyOutDir: true,
+    rollupOptions: {
+      output: {
+        assetFileNames: "nova-editor.[ext]",
+      },
+    },
   },
   define: {
     "process.env.NODE_ENV": '"production"',

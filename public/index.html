@@ -1,168 +1,548 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Brand Nova Editor - Demo</title>
-    <link rel="stylesheet" href="./brand-nova-editor-beta.css">
-    <style>
-        body {
-            font-family: system-ui, -apple-system, sans-serif;
-            margin: 0;
-            padding: 20px;
-            background: #f8fafc;
-        }
-        .demo-container {
-            max-width: 800px;
-            margin: 0 auto;
-        }
-        h1 {
-            color: #1e293b;
-            margin-bottom: 10px;
-        }
-        p {
-            color: #64748b;
-            margin-bottom: 30px;
-        }
-        .editor-container {
-            margin: 20px 0;
-        }
-        .config-examples {
-            background: #1e293b;
-            color: #e2e8f0;
-            padding: 20px;
-            border-radius: 8px;
-            font-family: 'Courier New', monospace;
-            font-size: 13px;
-            overflow-x: auto;
-            margin: 20px 0;
-        }
-        .config-examples .comment {
-            color: #64748b;
-        }
-        .config-examples .active {
-            color: #10b981;
-        }
-        .config-examples .inactive {
-            color: #64748b;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="./logo.png" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  
+  <!-- SEO & Social Media Meta Tags -->
+  <title>Nova Editor | Rich Text Editor by Brand Nova</title>
+  <meta name="description" content="A configurable, themeable rich text editor. Drop-in for Django, plain HTML, and any web project." />
+  <meta name="author" content="Brand Nova" />
+  <meta name="keywords" content="rich text editor, wysiwyg, react editor, slate.js, django, javascript" />
+  
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://brandnova.github.io/nova-editor/" />
+  <meta property="og:title" content="Nova Editor | Rich Text Editor by Brand Nova" />
+  <meta property="og:description" content="Configurable rich text editor built with React + Slate.js. Drop-in for any web project." />
+  <meta property="og:image" content="./NovaEditor-Meta-Display.png" />
+  <meta property="og:image:alt" content="Nova Editor Preview - Rich Text Editor Interface" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:site_name" content="Brand Nova" />
+  
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:url" content="https://brandnova.github.io/nova-editor/" />
+  <meta name="twitter:title" content="Nova Editor | Rich Text Editor by Brand Nova" />
+  <meta name="twitter:description" content="Configurable rich text editor. Drop-in for Django, plain HTML, and any web project." />
+  <meta name="twitter:image" content="./NovaEditor-Meta-Display.png" />
+  <meta name="twitter:image:alt" content="Nova Editor Preview" />
+  
+  <!-- Theme Color -->
+  <meta name="theme-color" content="#0d0d0d" />
+  
+  <!-- Default to dark mode -->
+  <meta name="color-scheme" content="dark" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="./nova-editor.css" />
+  <script src="./nova-editor.umd.js" defer></script>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --pg-bg:      #f8f9fa;
+      --pg-surface: #ffffff;
+      --pg-border:  #bababa;
+      --pg-text:    #1a1a2e;
+      --pg-muted:   #6e7178;
+      --pg-subtle:  #6b7280;
+      --pg-input:   #f9fafb;
+      --pg-kbd:     #f3f4f6;
+      --pg-shadow:  0 1px 4px rgba(0,0,0,0.06);
+      --pg-radius:  0.75rem;
+      --pg-nav-h:   56px;
+    }
+
+    /* Default to dark theme */
+    [data-pg-dark], body:not([data-pg-light]) {
+      --pg-bg:      #0d0d0d;
+      --pg-surface: #111111;
+      --pg-border:  rgba(255, 255, 255, 0.15);
+      --pg-text:    #e5e5e5;
+      --pg-muted:   #9da3af;
+      --pg-input:   rgba(255,255,255,0.05);
+      --pg-kbd:     rgba(255,255,255,0.06);
+      --pg-shadow:  0 1px 4px rgba(0,0,0,0.3);
+    }
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: var(--pg-bg); color: var(--pg-text);
+      min-height: 100vh;
+      transition: background 0.2s, color 0.2s;
+    }
+
+    /* ── Header ── */
+    .pg-header {
+      background: var(--pg-surface); border-bottom: 1px solid var(--pg-border);
+      height: var(--pg-nav-h); display: flex; align-items: center;
+      padding: 0 1rem; position: sticky; top: 0; z-index: 50;
+      box-shadow: var(--pg-shadow);
+      transition: background 0.2s, border-color 0.2s;
+    }
+    .pg-header-inner {
+      max-width: 960px; margin: 0 auto; width: 100%;
+      display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+    }
+    .pg-logo-row { display: flex; align-items: center; gap: 0.75rem; }
+    .pg-logo     { height: 28px; width: auto; }
+    .pg-title    { font-size: 1rem; font-weight: 700; color: var(--pg-text); line-height: 1; }
+    .pg-sub      { font-size: 0.7rem; color: var(--pg-muted); margin-top: 0.15rem;
+                   transition: color 0.2s; }
+    
+    /* Hide version badge on mobile */
+    .pg-badge {
+      display: none;
+    }
+    
+    @media (min-width: 640px) {
+      .pg-badge {
+        display: inline-block;
+        font-size: 0.63rem; font-weight: 600; letter-spacing: 0.05em;
+        color: var(--pg-muted); background: var(--pg-input);
+        border: 1px solid var(--pg-border); border-radius: 999px;
+        padding: 0.2rem 0.6rem; transition: background 0.2s;
+      }
+    }
+
+    .pg-header-actions { display: flex; align-items: center; gap: 0.5rem; }
+    
+    /* Hide GitHub buttons on mobile */
+    .pg-gh-link, .pg-star-link {
+      display: none;
+    }
+    
+    @media (min-width: 768px) {
+      .pg-gh-link, .pg-star-link {
+        display: inline-flex;
+        align-items: center; gap: 0.4rem;
+        font-size: 0.78rem; font-weight: 500;
+        color: var(--pg-muted); text-decoration: none;
+        padding: 0.3rem 0.65rem; border: 1px solid var(--pg-border);
+        border-radius: 0.375rem; transition: all 0.15s; white-space: nowrap;
+      }
+    }
+
+    .pg-gh-link:hover { border-color: #f59e0b; color: #f59e0b; }
+    .pg-star-link {
+      background: rgba(245,158,11,0.08);
+      border-color: rgba(245, 159, 11, 0.472); color: #f59e0b;
+    }
+    .pg-star-link:hover { background: rgba(245,158,11,0.15); }
+
+    .pg-theme-toggle {
+      font-size: 0.7rem; font-weight: 600; font-family: inherit;
+      background: var(--pg-input); border: 1px solid var(--pg-border);
+      color: var(--pg-muted); border-radius: 0.375rem;
+      padding: 0.3rem 0.65rem; cursor: pointer;
+      transition: all 0.15s;
+      white-space: nowrap;
+    }
+    .pg-theme-toggle:hover { border-color: #f59e0b; color: #f59e0b; }
+
+    /* ── Layout ── */
+    .pg-main {
+      max-width: 960px; margin: 0 auto;
+      padding: 1rem; display: flex; flex-direction: column; gap: 1.5rem;
+    }
+    
+    @media (min-width: 640px) {
+      .pg-main {
+        padding: 2rem;
+        gap: 1.75rem;
+      }
+    }
+
+    .pg-section-label {
+      font-size: 0.63rem; font-weight: 700; letter-spacing: 0.1em;
+      text-transform: uppercase; color: var(--pg-muted);
+      margin-bottom: 0.875rem; transition: color 0.2s;
+    }
+
+    .pg-panel {
+      background: var(--pg-surface); border: 1px solid var(--pg-border);
+      border-radius: var(--pg-radius); padding: 1rem;
+      box-shadow: var(--pg-shadow);
+      transition: background 0.2s, border-color 0.2s;
+    }
+    
+    @media (min-width: 640px) {
+      .pg-panel {
+        padding: 1.25rem;
+      }
+    }
+
+    /* ── Config grid ── */
+    .pg-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 0.75rem;
+    }
+    
+    @media (min-width: 640px) {
+      .pg-grid {
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+        gap: 0.75rem;
+      }
+    }
+
+    .pg-control         { display: flex; flex-direction: column; gap: 0.3rem; }
+    .pg-control-label   {
+      font-size: 0.65rem; font-weight: 600; letter-spacing: 0.04em;
+      color: var(--pg-muted); text-transform: uppercase;
+      transition: color 0.2s;
+    }
+
+    .pg-control select,
+    .pg-control input {
+      background: var(--pg-input); border: 1px solid var(--pg-border);
+      border-radius: 0.375rem; padding: 0.375rem 0.5rem;
+      font-family: inherit; font-size: 0.75rem; color: var(--pg-text);
+      outline: none; width: 100%;
+      transition: border-color 0.15s, background 0.2s, color 0.2s;
+    }
+    .pg-control select:focus,
+    .pg-control input:focus { border-color: #f59e0b; }
+
+    .pg-toggle {
+      border-radius: 0.375rem; padding: 0.375rem 0.75rem;
+      font-size: 0.75rem; cursor: pointer; font-weight: 600;
+      font-family: inherit; text-align: left; border: 1px solid;
+      transition: all 0.15s;
+    }
+    .pg-toggle.on  { background: #f0fdf4; border-color: #86efac; color: #15803d; }
+    .pg-toggle.off { background: var(--pg-input); border-color: var(--pg-border); color: var(--pg-muted); }
+
+    /* ── HTML output ── */
+    .pg-pre {
+      background: #1e1e2e; border: 1px solid #2d2d3f;
+      border-radius: 0.5rem; padding: 1rem;
+      font-family: 'JetBrains Mono', monospace; font-size: 0.7rem;
+      color: #a3e635; overflow-x: auto; white-space: pre-wrap;
+      word-break: break-all; max-height: 200px; overflow-y: auto;
+    }
+    @media (min-width: 640px) {
+      .pg-pre {
+        font-size: 0.72rem;
+      }
+    }
+    .pg-pre:empty::before { content: "Content will appear here…"; color: #81818f; }
+
+    /* ── Keyboard shortcuts ── */
+    .pg-kbd-grid {
+      display: grid; grid-template-columns: 1fr; gap: 0.5rem;
+    }
+    
+    @media (min-width: 480px) {
+      .pg-kbd-grid {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      }
+    }
+
+    .pg-kbd-row  { display: flex; align-items: center; gap: 0.5rem; }
+    kbd {
+      background: var(--pg-kbd); border: 1px solid var(--pg-border);
+      border-radius: 4px; padding: 0.15rem 0.4rem;
+      font-family: 'JetBrains Mono', monospace; font-size: 0.65rem;
+      color: var(--pg-text); white-space: nowrap; flex-shrink: 0;
+      transition: background 0.2s, color 0.2s;
+    }
+    .pg-kbd-label { font-size: 0.75rem; color: var(--pg-muted); transition: color 0.2s; }
+
+    /* ── Hero ── */
+    .pg-hero {
+      text-align: center; padding: 0.5rem 0 0.25rem;
+    }
+    .pg-hero-title {
+      font-size: clamp(1.5rem, 5vw, 2rem);
+      font-weight: 700;
+      color: var(--pg-text); letter-spacing: -0.01em; line-height: 1.2;
+      transition: color 0.2s;
+    }
+    .pg-hero-title span { color: #f59e0b; }
+    .pg-hero-desc {
+      margin-top: 0.5rem; font-size: 0.85rem; color: var(--pg-muted);
+      max-width: 520px; margin-inline: auto; transition: color 0.2s;
+      line-height: 1.4;
+    }
+    .pg-hero-ctas { display: flex; justify-content: center; gap: 0.75rem; margin-top: 1rem; flex-wrap: wrap; }
+
+    /* ── Footer ── */
+    .pg-footer {
+      text-align: center; padding: 1.5rem;
+      font-size: 0.7rem; color: var(--pg-muted);
+      border-top: 1px solid var(--pg-border);
+      transition: border-color 0.2s, color 0.2s;
+    }
+    @media (min-width: 640px) {
+      .pg-footer {
+        padding: 2rem;
+        font-size: 0.72rem;
+      }
+    }
+    .pg-footer a { color: #f59e0b; text-decoration: none; }
+
+    /* Editor sticky top — must match nav height */
+    #editor-section { --ne-sticky-top: var(--pg-nav-h); }
+  </style>
 </head>
-<body>
-    <div class="demo-container">
-        <h1>Brand Nova Editor - Demo</h1>
-        <p>Test different configurations by uncommenting options below and refreshing the page.</p>
-        
-        <!-- Single active editor instance -->
-        <div class="editor-container">
-            <div id="editor-main"></div>
+<body data-pg-dark>
+
+  <!-- ── Header ── -->
+  <header class="pg-header">
+    <div class="pg-header-inner">
+      <div class="pg-logo-row">
+        <img src="./logo.png" alt="Brand Nova" class="pg-logo" />
+        <div>
+          <div class="pg-title">Nova Editor</div>
+          <div class="pg-sub">by Brand Nova</div>
         </div>
-
-        <h2>Configuration Options</h2>
-        <div class="config-examples">
-<span class="comment">// ACTIVE: Standard Configuration</span>
-<span class="active">BrandNovaEditor.init({
-  elementId: "editor-main",
-  preset: "standard",
-  theme: "light",
-  colors: { primary: "#3b82f6" },
-  placeholder: "Standard editor with markdown paste support...",
-  compact: false
-});</span>
-
-<span class="comment">// OPTION 1: Dark Theme Full Features</span>
-<span class="inactive">/*
-BrandNovaEditor.init({
-  elementId: "editor-main",
-  preset: "full",
-  theme: "dark",
-  colors: { primary: "#10b981", background: "#1e293b", text: "#f1f5f9" },
-  placeholder: "Dark theme with all features including alignments...",
-  compact: false
-});
-*/</span>
-
-<span class="comment">// OPTION 2: Custom Toolbar Configuration</span>
-<span class="inactive">/*
-BrandNovaEditor.init({
-  elementId: "editor-main",
-  preset: "custom",
-  customTools: ["bold", "italic", "underline", "heading1", "heading2", "bulletList", "numberedList", "paragraph"],
-  theme: "light",
-  colors: { primary: "#f59e0b", accent: "#fbbf24" },
-  placeholder: "Custom toolbar for specific needs...",
-  compact: false
-});
-*/</span>
-
-<span class="comment">// OPTION 3: Minimal Compact Editor</span>
-<span class="inactive">/*
-BrandNovaEditor.init({
-  elementId: "editor-main",
-  preset: "minimal",
-  theme: "light",
-  compact: true,
-  colors: { primary: "#ef4444", background: "#fef2f2" },
-  placeholder: "Minimal compact editor for simple text...",
-});
-*/</span>
-
-<span class="comment">// OPTION 4: Full Featured with Custom Colors</span>
-<span class="inactive">/*
-BrandNovaEditor.init({
-  elementId: "editor-main",
-  preset: "full",
-  theme: "light",
-  colors: { 
-    primary: "#8b5cf6",
-    accent: "#a78bfa",
-    background: "#faf5ff",
-    text: "#581c87",
-    border: "#d8b4fe"
-  },
-  placeholder: "Full editor with custom purple theme...",
-  compact: false
-});
-*/</span>
-
-<span class="comment">// OPTION 5: Blog Writing Setup</span>
-<span class="inactive">/*
-BrandNovaEditor.init({
-  elementId: "editor-main",
-  preset: "custom",
-  customTools: ["bold", "italic", "heading1", "heading2", "heading3", "bulletList", "numberedList", "blockquote", "horizontalRule", "paragraph"],
-  theme: "light",
-  colors: { primary: "#059669", accent: "#10b981" },
-  placeholder: "Perfect setup for blog writing...",
-  compact: false
-});
-*/</span>
-
-<span class="comment">// OPTION 6: Documentation Editor</span>
-<span class="inactive">/*
-BrandNovaEditor.init({
-  elementId: "editor-main",
-  preset: "custom",
-  customTools: ["bold", "italic", "code", "heading1", "heading2", "heading3", "bulletList", "numberedList", "blockquote", "alignLeft", "alignCenter", "paragraph"],
-  theme: "light",
-  colors: { primary: "#0ea5e9", accent: "#38bdf8", background: "#f0f9ff" },
-  placeholder: "Documentation editor with code support...",
-  compact: false
-});
-*/</span>
-        </div>
+        <span class="pg-badge">v2.0.0</span>
+      </div>
+      <div class="pg-header-actions">
+        <a href="https://github.com/brandnova/nova-editor/" class="pg-gh-link" target="_blank" rel="noopener">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
+          </svg>
+          GitHub
+        </a>
+        <a href="https://github.com/brandnova/nova-editor/" class="pg-star-link" target="_blank" rel="noopener">
+          ★ Star
+        </a>
+        <button class="pg-theme-toggle" id="pg-theme-toggle" title="Toggle playground theme">☀</button>
+      </div>
     </div>
+  </header>
 
-    <script src="./brand-nova-editor.umd.js"></script>
-    <script>
-        BrandNovaEditor.init({
-          elementId: "editor-main",
-          preset: "standard",
-          theme: "light",
-          colors: { primary: "#3b82f6" },
-          placeholder: "Standard editor with markdown paste support...",
-          compact: false
-        });
-    </script>
+  <!-- ── Main ── -->
+  <main class="pg-main">
+
+    <!-- Hero -->
+    <section class="pg-hero">
+      <h2 class="pg-hero-title"><span>Brand Nova </span>Lightweight<br>Rich text editor.</h2>
+      <p class="pg-hero-desc">
+        Nova Editor is a drop-in rich text editor for any HTML-based web project.
+        Configurable themes, toolbar presets, Markdown paste support, and a clean standalone build.<br>
+        See the README or USAGE guide for setup instructions.
+      </p>
+      <div class="pg-hero-ctas">
+        <a href="https://github.com/brandnova/nova-editor/" class="pg-gh-link" target="_blank" rel="noopener">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
+          </svg>
+          View Repo
+        </a>
+        <a href="https://github.com/brandnova/nova-editor/stargazers" class="pg-star-link" target="_blank" rel="noopener">
+          ★ Star this project
+        </a>
+      </div>
+    </section>
+
+    <!-- Config panel -->
+    <section class="pg-panel">
+      <p class="pg-section-label">Configuration</p>
+      <div class="pg-grid">
+
+        <div class="pg-control">
+          <span class="pg-control-label">UI Theme</span>
+          <select id="cfg-ui-preset">
+            <option value="valiux" selected>valiux</option>
+            <option value="clean">clean</option>
+            <option value="utility">utility</option>
+            <option value="soft">soft</option>
+          </select>
+        </div>
+
+        <div class="pg-control">
+          <span class="pg-control-label">Toolbar Preset</span>
+          <select id="cfg-toolbar">
+            <option value="minimal">minimal</option>
+            <option value="standard">standard</option>
+            <option value="full" selected>full</option>
+          </select>
+        </div>
+
+        <div class="pg-control">
+          <span class="pg-control-label">Color Mode</span>
+          <select id="cfg-color-mode">
+            <option value="dark" selected>dark</option>
+            <option value="light">light</option>
+            <option value="system">system</option>
+          </select>
+        </div>
+
+        <div class="pg-control"><span class="pg-control-label">Glass Effect</span>
+          <button class="pg-toggle on" id="tog-glass">✓ On</button></div>
+        <div class="pg-control"><span class="pg-control-label">Word Count</span>
+          <button class="pg-toggle on" id="tog-wordcount">✓ On</button></div>
+        <div class="pg-control"><span class="pg-control-label">Sticky Toolbar</span>
+          <button class="pg-toggle on" id="tog-sticky">✓ On</button></div>
+        <div class="pg-control"><span class="pg-control-label">Branding</span>
+          <button class="pg-toggle on" id="tog-branding">✓ On</button></div>
+
+        <div class="pg-control">
+          <span class="pg-control-label">Max Height (px)</span>
+          <input type="text" id="cfg-maxheight" placeholder="e.g. 400" />
+        </div>
+        <div class="pg-control">
+          <span class="pg-control-label">Outer Radius</span>
+          <input type="text" id="cfg-radius" placeholder="e.g. 1.5rem" />
+        </div>
+        <div class="pg-control">
+          <span class="pg-control-label">Button Radius</span>
+          <input type="text" id="cfg-radius-btn" placeholder="e.g. 999px" />
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Editor -->
+    <section id="editor-section">
+      <p class="pg-section-label">Editor Preview</p>
+      <div id="nova-editor-mount"></div>
+    </section>
+
+    <!-- HTML output -->
+    <section>
+      <p class="pg-section-label">HTML Output</p>
+      <pre class="pg-pre" id="html-output-display"></pre>
+    </section>
+
+    <!-- Shortcuts -->
+    <section class="pg-panel">
+      <p class="pg-section-label">Keyboard Shortcuts</p>
+      <div class="pg-kbd-grid">
+        <div class="pg-kbd-row"><kbd>Ctrl+B</kbd><span class="pg-kbd-label">Bold</span></div>
+        <div class="pg-kbd-row"><kbd>Ctrl+I</kbd><span class="pg-kbd-label">Italic</span></div>
+        <div class="pg-kbd-row"><kbd>Ctrl+U</kbd><span class="pg-kbd-label">Underline</span></div>
+        <div class="pg-kbd-row"><kbd>Ctrl+`</kbd><span class="pg-kbd-label">Inline Code</span></div>
+        <div class="pg-kbd-row"><kbd>Ctrl+Shift+S</kbd><span class="pg-kbd-label">Strikethrough</span></div>
+        <div class="pg-kbd-row"><kbd>Ctrl+Z</kbd><span class="pg-kbd-label">Undo</span></div>
+        <div class="pg-kbd-row"><kbd>Ctrl+Y</kbd><span class="pg-kbd-label">Redo</span></div>
+        <div class="pg-kbd-row"><kbd>F11</kbd><span class="pg-kbd-label">Fullscreen</span></div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="pg-footer">
+    Nova Editor. Built by <a href="https://brandnova.pythonanywhere.com" target="_blank">Brand Nova</a>.
+    Released under the <a href="https://github.com/brandnova/nova-editor/LICENSE" target="_blank">MIT License</a>.
+  </footer>
+
+  <script>
+    // ── State ──────────────────────────────────────────────────────────────────
+    const state = {
+      uiPreset:  "valiux",
+      toolbar:   "full",
+      colorMode: "dark",
+      glass:     true,
+      wordCount: true,
+      sticky:    true,
+      branding:  true,
+      maxHeight: null,
+      radius:    "",
+      radiusBtn: "",
+    }
+
+    let editorInstance = null
+
+    function initEditor() {
+      if (editorInstance) {
+        editorInstance.destroy()
+        document.getElementById("nova-editor-mount").innerHTML = ""
+      }
+
+      const uiConfig = { preset: state.uiPreset, glass: state.glass }
+      if (state.radius)    { uiConfig.borders = { ...(uiConfig.borders||{}), radius:    state.radius }    }
+      if (state.radiusBtn) { uiConfig.borders = { ...(uiConfig.borders||{}), radiusBtn: state.radiusBtn } }
+
+      editorInstance = window.NovaEditor.init({
+        elementId:     "nova-editor-mount",
+        preset:        state.uiPreset,
+        toolbar:       state.toolbar,
+        colorMode:     state.colorMode,
+        glass:         state.glass,
+        showWordCount: state.wordCount,
+        stickyToolbar: state.sticky,
+        maxHeight:     state.maxHeight,
+        branding:      state.branding ? { logo: "./logo.png", name: "Brand Nova" } : null,
+        uiConfig,
+        placeholder:   "Start writing, paste Markdown, or try the toolbar…",
+        onHTMLChange(html) {
+          document.getElementById("html-output-display").textContent = html || ""
+        },
+      })
+    }
+
+    // ── Playground dark/light toggle ── Default to dark ────────────────────────
+    const themeToggleBtn = document.getElementById("pg-theme-toggle")
+    let pgDark = true // Default to dark
+
+    themeToggleBtn.addEventListener("click", () => {
+      pgDark = !pgDark
+      if (pgDark) {
+        document.body.setAttribute("data-pg-dark", "")
+        document.body.removeAttribute("data-pg-light")
+        themeToggleBtn.textContent = "☀"
+      } else {
+        document.body.removeAttribute("data-pg-dark")
+        document.body.setAttribute("data-pg-light", "")
+        themeToggleBtn.textContent = "☾"
+      }
+    })
+
+    // ── Toggles ────────────────────────────────────────────────────────────────
+    function wireToggle(id, stateKey) {
+      const btn = document.getElementById(id)
+      btn.addEventListener("click", () => {
+        state[stateKey] = !state[stateKey]
+        btn.className = "pg-toggle " + (state[stateKey] ? "on" : "off")
+        btn.textContent = state[stateKey] ? "✓ On" : "Off"
+        initEditor()
+      })
+    }
+
+    // ── Selects ────────────────────────────────────────────────────────────────
+    function wireSelect(id, stateKey) {
+      document.getElementById(id).addEventListener("change", e => {
+        state[stateKey] = e.target.value
+        initEditor()
+      })
+    }
+
+    // ── Text inputs ────────────────────────────────────────────────────────────
+    function wireInput(id, setter) {
+      const el = document.getElementById(id)
+      const apply = () => { setter(el.value.trim()); initEditor() }
+      el.addEventListener("blur",    apply)
+      el.addEventListener("keydown", e => { if (e.key === "Enter") apply() })
+    }
+
+    // ── Wire everything ────────────────────────────────────────────────────────
+    document.addEventListener("DOMContentLoaded", () => {
+      wireSelect("cfg-ui-preset",  "uiPreset")
+      wireSelect("cfg-toolbar",    "toolbar")
+      wireSelect("cfg-color-mode", "colorMode")
+
+      wireToggle("tog-glass",     "glass")
+      wireToggle("tog-wordcount", "wordCount")
+      wireToggle("tog-sticky",    "sticky")
+      wireToggle("tog-branding",  "branding")
+
+      wireInput("cfg-maxheight",  v => { state.maxHeight = v && !isNaN(parseInt(v)) ? parseInt(v) : null })
+      wireInput("cfg-radius",     v => { state.radius    = v })
+      wireInput("cfg-radius-btn", v => { state.radiusBtn = v })
+
+      initEditor()
+    })
+  </script>
 </body>
 </html>

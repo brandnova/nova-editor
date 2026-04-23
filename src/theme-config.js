@@ -1,108 +1,225 @@
-// Theme Configuration File
-// Modify this file to customize the editor appearance for different projects
+/**
+ * Nova Editor – Theme Configuration System
+ *
+ * This is the single source of truth for theming. Pass a `uiConfig` object
+ * to NovaEditor (or window.NovaEditor.init) to override any of these values.
+ *
+ * The full schema is documented here. You can also use one of the built-in
+ * named themes via `uiConfig.theme = "valiux" | "clean" | "minimal-dark"`.
+ */
 
-export const themeConfig = {
-  // Color schemes
-  colors: {
-    light: {
-      primary: "#3b82f6", // Brand color for buttons/highlights
-      background: "#ffffff", // Editor background
-      text: "#1f2937", // Main text color
-      textSecondary: "#6b7280", // Secondary text (word count, etc.)
-      border: "#e5e7eb", // Border colors
-      toolbarBg: "#f9fafb", // Toolbar background
-      hoverBg: "#f3f4f6", // Hover states
-      accent: "#b9105fff", // Success/accent color
-    },
-    dark: {
-      primary: "#60a5fa", // Brand color for buttons/highlights
-      background: "#111827", // Editor background
-      text: "#f9fafb", // Main text color
-      textSecondary: "#9ca3af", // Secondary text (word count, etc.)
-      border: "#374151", // Border colors
-      toolbarBg: "#1f2937", // Toolbar background
-      hoverBg: "#374151", // Hover states
-      accent: "#b9105fff", // Success/accent color
-    },
-  },
+// ── Built-in named themes ─────────────────────────────────────────────────────
 
-  // Typography
-  typography: {
-    fontFamily: "system-ui, -apple-system, sans-serif",
-    fontSize: {
-      base: "16px",
-      small: "14px",
-      large: "18px",
+export const NAMED_THEMES = {
+  /**
+   * Valiux default: Amber on deep dark with glass morphism.
+   */
+  valiux: {
+    colorMode: "dark",
+    glass: true,
+    colors: {
+      primary:       "#f59e0b",
+      primaryLight:  "#fde68a",
+      primaryDark:   "#b45309",
+      primaryFg:     "#1c1008",
     },
-    lineHeight: "1.6",
-  },
-
-  // Spacing and layout
-  spacing: {
-    padding: {
-      editor: "24px", // Editor content padding
-      toolbar: "12px", // Toolbar padding
-      header: "16px", // Header padding
+    typography: {
+      font: "'Syne', sans-serif",
+      monoFont: "'JetBrains Mono', monospace",
+      fontSize: "16px",
+      lineHeight: "1.75",
     },
-    borderRadius: "8px", // Border radius for containers
-    borderWidth: "1px", // Border width
-  },
-
-  // Component-specific styling
-  components: {
+    borders: {
+      radius: "0.75rem",
+      radiusBtn: "0.375rem",
+      width: "1px",
+    },
     toolbar: {
-      height: "48px",
-      buttonSize: "32px",
-      gap: "4px",
+      size: "2.25rem",
+      iconSize: "1rem",
+      compact: false,
     },
-    editor: {
-      minHeight: "400px",
-      maxWidth: "none",
+    shadow: "0 4px 32px rgba(0,0,0,0.5)",
+  },
+
+  /**
+   * Clean light theme — suitable for client-facing apps.
+   */
+  clean: {
+    colorMode: "light",
+    glass: false,
+    colors: {
+      primary:       "#f59e0b",
+      primaryLight:  "#fef3c7",
+      primaryDark:   "#92400e",
+      primaryFg:     "#ffffff",
     },
+    typography: {
+      font: "'Syne', sans-serif",
+      monoFont: "'JetBrains Mono', monospace",
+      fontSize: "16px",
+      lineHeight: "1.75",
+    },
+    borders: {
+      radius: "0.5rem",
+      radiusBtn: "0.25rem",
+      width: "1px",
+    },
+    toolbar: {
+      size: "2rem",
+      iconSize: "0.9rem",
+      compact: false,
+    },
+    shadow: "0 2px 16px rgba(255, 255, 255, 0.06)",
+  },
+
+  /**
+   * Compact utility mode — tight toolbar, no shadow, square corners.
+   */
+  utility: {
+    colorMode: "light",
+    glass: false,
+    colors: {
+      primary:       "#f59e0b",
+      primaryLight:  "#fef3c7",
+      primaryDark:   "#92400e",
+      primaryFg:     "#ffffff",
+    },
+    typography: {
+      font: "system-ui, sans-serif",
+      monoFont: "monospace",
+      fontSize: "14px",
+      lineHeight: "1.6",
+    },
+    borders: {
+      radius: "0",
+      radiusBtn: "0",
+      width: "1px",
+    },
+    toolbar: {
+      size: "1.75rem",
+      iconSize: "0.8rem",
+      compact: true,
+    },
+    shadow: "none",
+  },
+
+  /**
+   * Rounded soft mode — pill buttons, generous radius.
+   */
+  soft: {
+    colorMode: "light",
+    glass: false,
+    colors: {
+      primary:       "#f59e0b",
+      primaryLight:  "#fde68a",
+      primaryDark:   "#b45309",
+      primaryFg:     "#1c1008",
+    },
+    typography: {
+      font: "'Syne', sans-serif",
+      monoFont: "'JetBrains Mono', monospace",
+      fontSize: "16px",
+      lineHeight: "1.8",
+    },
+    borders: {
+      radius: "1.25rem",
+      radiusBtn: "999px",
+      width: "1.5px",
+    },
+    toolbar: {
+      size: "2.25rem",
+      iconSize: "1rem",
+      compact: false,
+    },
+    shadow: "0 8px 32px rgba(245,158,11,0.12)",
   },
 }
 
-// Preset configurations for different use cases
-export const presets = {
-  minimal: {
-    tools: ["bold", "italic", "underline", "strikethrough", "heading-one", "paragraph"],
-    features: ["wordCount"],
-  },
-  standard: {
-    tools: [
-      "bold",
-      "italic",
-      "underline",
-      "strikethrough",
-      "heading-one",
-      "heading-two",
-      "heading-three",
-      "bulleted-list",
-      "numbered-list",
-      "paragraph",
-    ],
-    features: ["wordCount", "markdownPaste"],
-  },
-  full: {
-    tools: [
-      "bold",
-      "italic",
-      "underline",
-      "strikethrough",
-      "code",
-      "heading-one",
-      "heading-two",
-      "heading-three",
-      "bulleted-list",
-      "numbered-list",
-      "block-quote",
-      "horizontal-rule",
-      "left",
-      "center",
-      "right",
-      "justify",
-      "paragraph",
-    ],
-    features: ["wordCount", "markdownPaste", "stickyToolbar"],
-  },
+// ── Default uiConfig (resolved before rendering) ─────────────────────────────
+
+export const DEFAULT_UI_CONFIG = {
+  /**
+   * Named theme to start from. One of: "valiux" | "clean" | "utility" | "soft".
+   * All other uiConfig keys OVERRIDE the named theme.
+   */
+  preset: "valiux",
+
+  /** "light" | "dark" | "system" */
+  colorMode: null, // null = use preset's colorMode
+
+  /** Apply glass morphism effect (dark mode recommended) */
+  glass: null,
+
+  /**
+   * Color overrides. All optional — unset keys fall back to the named theme.
+   * {
+   *   primary, primaryLight, primaryDark, primaryFg
+   * }
+   */
+  colors: {},
+
+  /**
+   * Typography overrides.
+   * { font, monoFont, fontSize, lineHeight }
+   */
+  typography: {},
+
+  /**
+   * Border overrides.
+   * { radius, radiusBtn, width }
+   *   radius    — outer container corner radius
+   *   radiusBtn — toolbar button corner radius
+   *   width     — border width
+   */
+  borders: {},
+
+  /**
+   * Toolbar overrides.
+   * { size, iconSize, compact }
+   *   size     — button height/width (e.g. "2.25rem")
+   *   iconSize — icon dimensions
+   *   compact  — boolean, reduces padding
+   */
+  toolbar: {},
+
+  /** Box shadow string or "none" */
+  shadow: null,
+}
+
+// ── Resolver: merges named theme + user overrides into CSS variable map ───────
+
+export function resolveTheme(uiConfig = {}) {
+  const base = NAMED_THEMES[uiConfig.preset || "valiux"] || NAMED_THEMES.valiux
+
+  const colors     = { ...base.colors,     ...(uiConfig.colors     || {}) }
+  const typography = { ...base.typography, ...(uiConfig.typography || {}) }
+  const borders    = { ...base.borders,    ...(uiConfig.borders    || {}) }
+  const toolbar    = { ...base.toolbar,    ...(uiConfig.toolbar    || {}) }
+
+  const colorMode = uiConfig.colorMode ?? base.colorMode
+  const glass     = uiConfig.glass     ?? base.glass
+  const shadow    = uiConfig.shadow    ?? base.shadow
+
+  return {
+    colorMode, // "light" | "dark" | "system"
+    glass,
+    compact: toolbar.compact,
+    cssVars: {
+      "--ne-primary":       colors.primary,
+      "--ne-primary-light": colors.primaryLight,
+      "--ne-primary-dark":  colors.primaryDark,
+      "--ne-primary-fg":    colors.primaryFg,
+      "--ne-font":          typography.font,
+      "--ne-mono-font":     typography.monoFont,
+      "--ne-font-size":     typography.fontSize,
+      "--ne-line-height":   typography.lineHeight,
+      "--ne-radius":        borders.radius,
+      "--ne-radius-btn":    borders.radiusBtn,
+      "--ne-border-width":  borders.width,
+      "--ne-toolbar-size":  toolbar.size,
+      "--ne-icon-size":     toolbar.iconSize,
+      "--ne-shadow":        shadow,
+    },
+  }
 }

@@ -1,279 +1,349 @@
 import { useState } from "react"
-import BrandNovaEditor from "./components/BrandNovaEditor"
+import NovaEditor from "./components/NovaEditor"
+import { NAMED_THEMES } from "./theme-config"
+import { TOOLBAR_PRESETS } from "./presets"
+import logoUrl from "./assets/logo.png"
 
-function App() {
-  const [editorConfig, setEditorConfig] = useState({
-    preset: "standard",
-    theme: "light",
-    compact: false,
-    colors: { primary: "#3b82f6" },
-    customTools: null,
-  })
+const UI_PRESETS    = Object.keys(NAMED_THEMES)
+const TOOLBAR_NAMES = Object.keys(TOOLBAR_PRESETS)
 
-  const presetDescriptions = {
-    minimal: "Bold, Italic, Underline, Strikethrough, H1, Paragraph",
-    standard: "Minimal + H2, H3, Lists, MD Paste",
-    full: "Standard + Code, Quotes, HR, Alignment, Enhanced MD",
-    custom: "User-defined toolbar configuration",
+// Nav height in px — used to offset the sticky toolbar
+const NAV_HEIGHT = 56
+
+export default function App() {
+  // Playground own theme (independent of editor)
+  const [pgDark, setPgDark] = useState(true)
+
+  // Editor config
+  const [uiPreset,     setUiPreset]     = useState("valiux")
+  const [toolbar,      setToolbar]      = useState("full")
+  const [colorMode,    setColorMode]    = useState("dark")
+  const [glass,        setGlass]        = useState(true)
+  const [showCount,    setShowCount]    = useState(true)
+  const [sticky,       setSticky]       = useState(true)
+  const [showBranding, setShowBranding] = useState(true)
+  const [maxHeight,    setMaxHeight]    = useState("")
+  const [radius,       setRadius]       = useState("")
+  const [radiusBtn,    setRadiusBtn]    = useState("")
+  const [htmlOutput,   setHtmlOutput]   = useState("")
+
+  const borderOverrides = {}
+  if (radius)    borderOverrides.radius    = radius
+  if (radiusBtn) borderOverrides.radiusBtn = radiusBtn
+
+  const uiConfig = {
+    preset: uiPreset,
+    glass,
+    ...(Object.keys(borderOverrides).length ? { borders: borderOverrides } : {}),
   }
 
-  const customToolbarOptions = {
-    "Writing Focus": ["bold", "italic", "heading1", "heading2", "paragraph"],
-    "Blog Editor": [
-      "bold",
-      "italic",
-      "underline",
-      "heading1",
-      "heading2",
-      "heading3",
-      "bulletList",
-      "numberedList",
-      "blockquote",
-      "paragraph",
-    ],
-    Documentation: [
-      "bold",
-      "italic",
-      "code",
-      "heading1",
-      "heading2",
-      "heading3",
-      "bulletList",
-      "numberedList",
-      "blockquote",
-      "horizontalRule",
-      "paragraph",
-    ],
-    "Minimal Writer": ["bold", "italic", "paragraph"],
-    "Full Featured": [
-      "bold",
-      "italic",
-      "underline",
-      "strikethrough",
-      "code",
-      "heading1",
-      "heading2",
-      "heading3",
-      "bulletList",
-      "numberedList",
-      "blockquote",
-      "horizontalRule",
-      "alignLeft",
-      "alignCenter",
-      "alignRight",
-      "paragraph",
-    ],
-  }
+  const parsedMaxHeight = maxHeight && !isNaN(parseInt(maxHeight)) ? parseInt(maxHeight) : null
 
-  const handleConfigChange = (key, value) => {
-    setEditorConfig((prev) => ({
-      ...prev,
-      [key]: value,
-    }))
-  }
-
-  const handleColorChange = (colorKey, value) => {
-    setEditorConfig((prev) => ({
-      ...prev,
-      colors: {
-        ...prev.colors,
-        [colorKey]: value,
-      },
-    }))
-  }
-
-  const handleCustomToolsChange = (toolsName) => {
-    if (toolsName === "none") {
-      setEditorConfig((prev) => ({ ...prev, customTools: null, preset: "standard" }))
-    } else {
-      setEditorConfig((prev) => ({
-        ...prev,
-        customTools: customToolbarOptions[toolsName],
-        preset: "custom",
-      }))
-    }
-  }
+  // Playground palette — matches index.html colors
+  const p = pgDark ? dark : light
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-6xl mx-auto px-4">
-        <div className="bg-white p-6 rounded-lg shadow-sm mb-6">
-          <h2 className="text-xl font-bold mb-4">Brand Nova Editor - Full Testing Ground</h2>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
-            <div className="space-y-4">
-              <h3 className="font-semibold text-gray-700">Basic Configuration</h3>
-              <div>
-                <label className="block text-sm font-medium mb-1">Preset:</label>
-                <select
-                  value={editorConfig.preset}
-                  onChange={(e) => handleConfigChange("preset", e.target.value)}
-                  className="w-full p-2 border border-gray-300 rounded"
-                >
-                  <option value="minimal">Minimal</option>
-                  <option value="standard">Standard</option>
-                  <option value="full">Full</option>
-                  <option value="custom">Custom</option>
-                </select>
-                <p className="text-xs text-gray-500 mt-1">{presetDescriptions[editorConfig.preset]}</p>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium mb-1">Theme:</label>
-                <select
-                  value={editorConfig.theme}
-                  onChange={(e) => handleConfigChange("theme", e.target.value)}
-                  className="w-full p-2 border border-gray-300 rounded"
-                >
-                  <option value="light">Light</option>
-                  <option value="dark">Dark</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="flex items-center">
-                  <input
-                    type="checkbox"
-                    checked={editorConfig.compact}
-                    onChange={(e) => handleConfigChange("compact", e.target.checked)}
-                    className="mr-2"
-                  />
-                  <span className="text-sm font-medium">Compact Layout</span>
-                </label>
-              </div>
-            </div>
-
-            <div className="space-y-4">
-              <h3 className="font-semibold text-gray-700">Custom Toolbar</h3>
-              <div>
-                <label className="block text-sm font-medium mb-1">Toolbar Config:</label>
-                <select
-                  onChange={(e) => handleCustomToolsChange(e.target.value)}
-                  className="w-full p-2 border border-gray-300 rounded"
-                  value={
-                    editorConfig.customTools
-                      ? Object.keys(customToolbarOptions).find(
-                          (key) =>
-                            JSON.stringify(customToolbarOptions[key]) === JSON.stringify(editorConfig.customTools),
-                        ) || "custom"
-                      : "none"
-                  }
-                >
-                  <option value="none">Use Preset</option>
-                  {Object.keys(customToolbarOptions).map((name) => (
-                    <option key={name} value={name}>
-                      {name}
-                    </option>
-                  ))}
-                </select>
-                {editorConfig.customTools && (
-                  <div className="mt-2 p-2 bg-gray-50 rounded text-xs">
-                    <strong>Tools:</strong> {editorConfig.customTools.join(", ")}
-                  </div>
-                )}
-              </div>
-            </div>
-
-            <div className="space-y-4">
-              <h3 className="font-semibold text-gray-700">Color Customization</h3>
-              <div>
-                <label className="block text-sm font-medium mb-1">Primary Color:</label>
-                <input
-                  type="color"
-                  value={editorConfig.colors.primary}
-                  onChange={(e) => handleColorChange("primary", e.target.value)}
-                  className="w-full h-10 border border-gray-300 rounded"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium mb-1">Background:</label>
-                <input
-                  type="color"
-                  value={editorConfig.colors.background || (editorConfig.theme === "dark" ? "#111827" : "#ffffff")}
-                  onChange={(e) => handleColorChange("background", e.target.value)}
-                  className="w-full h-10 border border-gray-300 rounded"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium mb-1">Text Color:</label>
-                <input
-                  type="color"
-                  value={editorConfig.colors.text || (editorConfig.theme === "dark" ? "#f9fafb" : "#1f2937")}
-                  onChange={(e) => handleColorChange("text", e.target.value)}
-                  className="w-full h-10 border border-gray-300 rounded"
-                />
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-gray-50 p-4 rounded-lg">
-            <h4 className="font-medium mb-2">Current Configuration:</h4>
-            <pre className="text-xs text-gray-600 overflow-x-auto">{JSON.stringify(editorConfig, null, 2)}</pre>
-          </div>
-        </div>
-
-        <div className="bg-white p-6 rounded-lg shadow-sm mb-6">
-          <h2 className="text-xl font-bold mb-4">Editor Instance</h2>
-          <div className="mb-4 p-4 bg-blue-50 rounded-lg">
-            <h4 className="font-medium text-blue-800 mb-2">Testing Instructions:</h4>
-            <ul className="text-sm text-blue-700 space-y-1">
-              <li>• Type a heading and press Enter to test auto-reset behavior</li>
-              <li>• Paste markdown content to test MD formatting (standard/full presets)</li>
-              <li>• Try different toolbar configurations to see available tools</li>
-              <li>• Switch themes to test color contrast and styling</li>
-            </ul>
-          </div>
-          <BrandNovaEditor
-            {...editorConfig}
-            placeholder="Start writing your content... Try typing '# Heading' and pressing Enter!"
-            onChange={(value) => console.log("[v0] Editor content changed:", value)}
-          />
-        </div>
-
-        <div className="bg-white p-6 rounded-lg shadow-sm">
-          <h2 className="text-xl font-bold mb-4">Feature Testing</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div style={{ ...pg.page, background: p.bg, color: p.text }}>
+      {/* ── Sticky nav ── */}
+      <header style={{ ...pg.header, background: p.surface, borderColor: p.border }}>
+        <div style={pg.headerInner}>
+          <div style={pg.logoRow}>
+            <img src={logoUrl} alt="Brand Nova" style={pg.headerLogo} />
             <div>
-              <h3 className="font-semibold mb-2">Markdown Test Content</h3>
-              <div className="bg-gray-50 p-3 rounded text-sm font-mono">
-                <div>## Heading 2</div>
-                <div>### Heading 3</div>
-                <div>**Bold text** and *italic text*</div>
-                <div>- [ ] Unchecked item</div>
-                <div>- [x] Checked item</div>
-                <div>| Col 1 | Col 2 |</div>
-                <div>|-------|-------|</div>
-                <div>| Data | More |</div>
-              </div>
-              <p className="text-xs text-gray-500 mt-2">
-                Copy and paste this into the editor to test markdown formatting
-              </p>
+              <h1 style={{ ...pg.title, color: p.text }}>Nova Editor</h1>
+              <p style={{ ...pg.subtitle, color: p.muted }}>by Brand Nova</p>
             </div>
-
-            <div>
-              <h3 className="font-semibold mb-2">Available Tools by Preset</h3>
-              <div className="space-y-2 text-sm">
-                <div>
-                  <strong>Minimal:</strong> Bold, Italic, Underline, Strike, H1, Paragraph
-                </div>
-                <div>
-                  <strong>Standard:</strong> + H2, H3, Lists, MD Paste
-                </div>
-                <div>
-                  <strong>Full:</strong> + Code, Quotes, HR, Alignment, Enhanced MD
-                </div>
-                <div>
-                  <strong>Custom:</strong> User-defined combinations
-                </div>
-              </div>
-            </div>
+            <span style={{ ...pg.badge, background: p.badgeBg, border: `1px solid ${p.border}`, color: p.muted }}>
+              v2.0.0
+            </span>
+          </div>
+          <div style={pg.headerActions}>
+            {/* Playground theme toggle */}
+            <button
+              type="button"
+              onClick={() => setPgDark(v => !v)}
+              style={{ ...pg.themeToggle, background: p.toggleBg, border: `1px solid ${p.border}`, color: p.muted }}
+              title="Toggle playground theme"
+            >
+              {pgDark ? "☀" : "☾"}
+            </button>
           </div>
         </div>
-      </div>
+      </header>
+
+      <main style={pg.main}>
+        {/* ── Config panel ── */}
+        <section style={{ ...pg.panel, background: p.surface, borderColor: p.border }}>
+          <p style={{ ...pg.sectionLabel, color: p.muted }}>Configuration</p>
+          <div style={pg.grid}>
+            <Sel label="UI Theme"       value={uiPreset}  onChange={setUiPreset}  opts={UI_PRESETS}                     p={p} />
+            <Sel label="Toolbar Preset" value={toolbar}   onChange={setToolbar}   opts={TOOLBAR_NAMES}                  p={p} />
+            <Sel label="Color Mode"     value={colorMode} onChange={setColorMode} opts={["light","dark","system"]}      p={p} />
+            <Tog label="Glass Effect"   value={glass}         onChange={setGlass}        p={p} />
+            <Tog label="Word Count"     value={showCount}     onChange={setShowCount}    p={p} />
+            <Tog label="Sticky Toolbar" value={sticky}        onChange={setSticky}       p={p} />
+            <Tog label="Branding"       value={showBranding}  onChange={setShowBranding} p={p} />
+            <Inp label="Max Height (px)" value={maxHeight} onChange={setMaxHeight} ph="e.g. 400"    p={p} />
+            <Inp label="Outer Radius"    value={radius}    onChange={setRadius}    ph="e.g. 1.5rem" p={p} />
+            <Inp label="Button Radius"   value={radiusBtn} onChange={setRadiusBtn} ph="e.g. 999px"  p={p} />
+          </div>
+        </section>
+
+        {/* ── Editor ── */}
+        <section>
+          <p style={{ ...pg.sectionLabel, color: p.muted }}>Editor Preview</p>
+          {/*
+            --ne-sticky-top tells the editor toolbar to sit below the sticky nav.
+            The value must match NAV_HEIGHT px.
+          */}
+          <div style={{ "--ne-sticky-top": `${NAV_HEIGHT}px` }}>
+            <NovaEditor
+              preset={toolbar}
+              uiConfig={uiConfig}
+              colorMode={colorMode}
+              glass={glass}
+              showWordCount={showCount}
+              stickyToolbar={sticky}
+              maxHeight={parsedMaxHeight}
+              branding={showBranding ? { logo: logoUrl, name: "Brand Nova" } : null}
+              placeholder="Start writing, paste Markdown, or try the toolbar…"
+              onHTMLChange={setHtmlOutput}
+              autoFocus={false}
+            />
+          </div>
+        </section>
+
+        {/* ── HTML output ── */}
+        {htmlOutput && (
+          <section>
+            <p style={{ ...pg.sectionLabel, color: p.muted }}>HTML Output</p>
+            <pre style={pg.pre}>{htmlOutput}</pre>
+          </section>
+        )}
+
+        {/* ── Shortcuts ── */}
+        <section style={{ ...pg.panel, background: p.surface, borderColor: p.border }}>
+          <p style={{ ...pg.sectionLabel, color: p.muted }}>Keyboard Shortcuts</p>
+          <div style={pg.kbdGrid}>
+            {[
+              ["Ctrl+B","Bold"], ["Ctrl+I","Italic"], ["Ctrl+U","Underline"],
+              ["Ctrl+`","Inline Code"], ["Ctrl+Shift+S","Strikethrough"],
+              ["Ctrl+Z","Undo"], ["Ctrl+Y / Ctrl+Shift+Z","Redo"], ["F11","Fullscreen"],
+            ].map(([k, v]) => (
+              <div key={k} style={pg.kbdRow}>
+                <kbd style={{ ...pg.kbd, background: p.kbdBg, border: `1px solid ${p.border}`, color: p.text }}>{k}</kbd>
+                <span style={{ ...pg.kbdLabel, color: p.muted }}>{v}</span>
+              </div>
+            ))}
+          </div>
+        </section>
+      </main>
     </div>
   )
 }
 
-export default App
+/* ── Controls ── */
+const Sel = ({ label, value, onChange, opts, p }) => (
+  <label style={ctrl.wrap}>
+    <span style={{ ...ctrl.label, color: p.muted }}>{label}</span>
+    <select value={value} onChange={e => onChange(e.target.value)}
+      style={{ ...ctrl.select, background: p.inputBg, border: `1px solid ${p.border}`, color: p.text }}>
+      {opts.map(o => <option key={o} value={o}>{o}</option>)}
+    </select>
+  </label>
+)
+
+const Tog = ({ label, value, onChange, p }) => (
+  <label style={{ ...ctrl.wrap, cursor: "pointer" }}>
+    <span style={{ ...ctrl.label, color: p.muted }}>{label}</span>
+    <button type="button" onClick={() => onChange(!value)} style={{
+      ...ctrl.toggleBase,
+      background: value ? "#f0fdf4" : p.inputBg,
+      border:     `1px solid ${value ? "#86efac" : p.border}`,
+      color:      value ? "#15803d" : p.muted,
+    }}>
+      {value ? "✓ On" : "Off"}
+    </button>
+  </label>
+)
+
+const Inp = ({ label, value, onChange, ph, p }) => (
+  <label style={ctrl.wrap}>
+    <span style={{ ...ctrl.label, color: p.muted }}>{label}</span>
+    <input type="text" value={value} onChange={e => onChange(e.target.value)}
+      placeholder={ph}
+      style={{ ...ctrl.input, background: p.inputBg, border: `1px solid ${p.border}`, color: p.text }} />
+  </label>
+)
+
+/* ── Palette tokens - matches index.html colors ── */
+const light = {
+  bg: "#f8f9fa",
+  surface: "#ffffff",
+  border: "#bababa",
+  text: "#1a1a2e",
+  muted: "#6e7178",
+  inputBg: "#f9fafb",
+  badgeBg: "#f3f4f6",
+  toggleBg: "#f3f4f6",
+  kbdBg: "#f3f4f6",
+}
+
+const dark = {
+  bg: "#0d0d0d",
+  surface: "#111111",
+  border: "rgba(255,255,255,0.15)",
+  text: "#e5e5e5",
+  muted: "#9da3af",
+  inputBg: "rgba(255,255,255,0.05)",
+  badgeBg: "rgba(255,255,255,0.05)",
+  toggleBg: "rgba(255,255,255,0.05)",
+  kbdBg: "rgba(255,255,255,0.06)",
+}
+
+/* ── Layout styles with mobile responsiveness ── */
+const pg = {
+  page: { minHeight: "100vh", fontFamily: "'Inter', system-ui, sans-serif", transition: "background 0.2s, color 0.2s" },
+  header: {
+    padding: "0 1rem",
+    height: 56,
+    display: "flex",
+    alignItems: "center",
+    borderBottom: "1px solid",
+    position: "sticky",
+    top: 0,
+    zIndex: 50,
+    boxShadow: "0 1px 3px rgba(0,0,0,0.06)",
+    "@media (minWidth: 640px)": { padding: "0 2rem" }
+  },
+  headerInner: {
+    maxWidth: 960,
+    margin: "0 auto",
+    width: "100%",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: "1rem",
+  },
+  headerActions: {
+    display: "flex",
+    alignItems: "center",
+    gap: "0.5rem",
+  },
+  logoRow:    { display: "flex", alignItems: "center", gap: "0.75rem" },
+  headerLogo: { height: 28, width: "auto" },
+  title:      { margin: 0, fontSize: "1rem", fontWeight: 700, lineHeight: 1 },
+  subtitle:   { margin: "0.15rem 0 0", fontSize: "0.7rem" },
+  themeToggle: {
+    fontSize: "0.7rem",
+    fontWeight: 600,
+    fontFamily: "inherit",
+    borderRadius: "0.375rem",
+    padding: "0.3rem 0.65rem",
+    cursor: "pointer",
+    transition: "all 0.15s",
+    whiteSpace: "nowrap",
+  },
+  badge: {
+    fontSize: "0.63rem",
+    fontWeight: 600,
+    letterSpacing: "0.05em",
+    borderRadius: "999px",
+    padding: "0.2rem 0.6rem",
+    "@media (minWidth: 640px)": { display: "inline-block" }
+  },
+  main: {
+    maxWidth: 960,
+    margin: "0 auto",
+    padding: "1rem",
+    display: "flex",
+    flexDirection: "column",
+    gap: "1.5rem",
+    "@media (minWidth: 640px)": { padding: "2rem", gap: "1.75rem" }
+  },
+  panel: {
+    border: "1px solid",
+    borderRadius: "0.75rem",
+    padding: "1rem",
+    boxShadow: "0 1px 4px rgba(0,0,0,0.04)",
+    "@media (minWidth: 640px)": { padding: "1.25rem" }
+  },
+  sectionLabel: {
+    margin: "0 0 0.875rem",
+    fontSize: "0.63rem",
+    fontWeight: 700,
+    letterSpacing: "0.1em",
+    textTransform: "uppercase",
+  },
+  grid: {
+    display: "grid",
+    gridTemplateColumns: "repeat(auto-fill, minmax(140px, 1fr))",
+    gap: "0.75rem",
+    "@media (minWidth: 640px)": { gridTemplateColumns: "repeat(auto-fill, minmax(150px, 1fr))" }
+  },
+  pre: {
+    background: "#1e1e2e",
+    border: "1px solid #2d2d3f",
+    borderRadius: "0.5rem",
+    padding: "1rem",
+    fontSize: "0.7rem",
+    color: "#a3e635",
+    fontFamily: "'JetBrains Mono', monospace",
+    overflowX: "auto",
+    whiteSpace: "pre-wrap",
+    wordBreak: "break-all",
+    maxHeight: 200,
+    overflowY: "auto",
+    margin: 0,
+    "@media (minWidth: 640px)": { fontSize: "0.72rem" }
+  },
+  kbdGrid: {
+    display: "grid",
+    gridTemplateColumns: "1fr",
+    gap: "0.5rem",
+    "@media (minWidth: 480px)": { gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))" }
+  },
+  kbdRow:  { display: "flex", alignItems: "center", gap: "0.5rem" },
+  kbd: {
+    borderRadius: "4px",
+    padding: "0.15rem 0.4rem",
+    fontSize: "0.65rem",
+    fontFamily: "'JetBrains Mono', monospace",
+    whiteSpace: "nowrap",
+    flexShrink: 0,
+  },
+  kbdLabel: { fontSize: "0.75rem" },
+}
+
+const ctrl = {
+  wrap:  { display: "flex", flexDirection: "column", gap: "0.3rem" },
+  label: { fontSize: "0.65rem", fontWeight: 600, letterSpacing: "0.04em", textTransform: "uppercase" },
+  select: {
+    borderRadius: "0.375rem",
+    padding: "0.375rem 0.5rem",
+    fontSize: "0.75rem",
+    cursor: "pointer",
+    outline: "none",
+    fontFamily: "inherit",
+    width: "100%",
+  },
+  toggleBase: {
+    borderRadius: "0.375rem",
+    padding: "0.35rem 0.75rem",
+    fontSize: "0.75rem",
+    cursor: "pointer",
+    fontWeight: 600,
+    textAlign: "left",
+    transition: "all 0.15s",
+    fontFamily: "inherit",
+  },
+  input: {
+    borderRadius: "0.375rem",
+    padding: "0.375rem 0.5rem",
+    fontSize: "0.75rem",
+    outline: "none",
+    width: "100%",
+    boxSizing: "border-box",
+    fontFamily: "inherit",
+  },
+}

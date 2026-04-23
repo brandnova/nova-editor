@@ -1,13 +1,13 @@
 {
-  "name": "brand-nova-editor-beta",
+  "name": "nova-editor",
   "private": true,
-  "version": "0.0.0",
+  "version": "2.0.0",
   "type": "module",
-  "homepage": "https://brandnova.github.io/brand-nova-editor-beta/",
+  "homepage": "https://brandnova.github.io/nova-editor/",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "build:standalone": "vite build --config vite.config.standalone.js && cp public/index.html dist-standalone/",
+    "build:standalone": "vite build --config vite.config.standalone.js",
     "preview": "vite preview",
     "deploy": "gh-pages -d dist-standalone"
   },
@@ -18,22 +18,14 @@
     "react-dom": "^18.3.1",
     "slate": "^0.118.0",
     "slate-history": "^0.113.1",
-    "slate-hyperscript": "^0.100.0",
-    "slate-md-serializer": "^5.5.4",
     "slate-react": "^0.117.4"
   },
   "devDependencies": {
-    "@eslint/js": "^9.13.0",
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
     "@vitejs/plugin-react": "^4.3.3",
     "autoprefixer": "^10.4.20",
-    "eslint": "^9.13.0",
-    "eslint-plugin-react": "^7.37.2",
-    "eslint-plugin-react-hooks": "^5.0.0",
-    "eslint-plugin-react-refresh": "^0.4.14",
     "gh-pages": "^6.3.0",
-    "globals": "^15.11.0",
     "postcss": "^8.4.49",
     "tailwindcss": "^3.4.17",
     "vite": "^6.3.5"
