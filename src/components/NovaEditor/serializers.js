@@ -1,8 +1,7 @@
 import { Text } from "slate"
 
-/**
- * Slate → HTML serializer
- */
+// ── Slate → HTML (raw) ────────────────────────────────────────────────────────
+
 const serializeNode = (node) => {
   if (Text.isText(node)) {
     let t = node.text
@@ -41,11 +40,73 @@ const serializeNode = (node) => {
   }
 }
 
-export const serializeToHTML = (nodes) => nodes.map(serializeNode).join("")
+// ── HTML pretty-printer ───────────────────────────────────────────────────────
+// Walks the raw HTML string and adds newlines + 2-space indentation.
+// Inline elements (strong, em, u, del, code, a, span) are never broken.
 
-/**
- * HTML → Slate parser (for loading existing content)
- */
+const INLINE_TAGS = new Set(["strong","em","u","del","code","a","span","abbr","small","b","i","s"])
+const VOID_TAGS   = new Set(["hr","br","img","input","meta","link"])
+
+const indentHTML = (html) => {
+  if (!html.trim()) return ""
+
+  const result = []
+  let depth    = 0
+  let i        = 0
+  const indent = () => "  ".repeat(depth)
+
+  while (i < html.length) {
+    if (html[i] !== "<") {
+      // Text node — emit inline, no newline prefix
+      let end = html.indexOf("<", i)
+      if (end === -1) end = html.length
+      const text = html.slice(i, end).trim()
+      if (text) result.push(text)
+      i = end
+      continue
+    }
+
+    // Find end of tag
+    const tagEnd = html.indexOf(">", i)
+    if (tagEnd === -1) { i++; continue }
+
+    const tag = html.slice(i, tagEnd + 1)
+    i = tagEnd + 1
+
+    // Closing tag?
+    if (tag.startsWith("</")) {
+      const name = tag.match(/<\/(\w+)/)?.[1]?.toLowerCase()
+      if (!INLINE_TAGS.has(name)) {
+        depth = Math.max(0, depth - 1)
+        result.push(`\n${indent()}${tag}`)
+      } else {
+        result.push(tag)
+      }
+      continue
+    }
+
+    // Self-closing or void?
+    const name     = tag.match(/<(\w+)/)?.[1]?.toLowerCase()
+    const isVoid   = VOID_TAGS.has(name) || tag.endsWith("/>")
+    const isInline = INLINE_TAGS.has(name)
+
+    if (isInline) {
+      result.push(tag)
+    } else {
+      result.push(`\n${indent()}${tag}`)
+      if (!isVoid) depth++
+    }
+  }
+
+  return result.join("").trim()
+}
+
+export const serializeToHTML = (nodes) => {
+  const raw = nodes.map(serializeNode).join("")
+  return indentHTML(raw)
+}
+
+// ── HTML → Slate parser ───────────────────────────────────────────────────────
 
 const parseInlineHTML = (element) => {
   const result = []
@@ -105,31 +166,22 @@ const parseHTMLElement = (el) => {
       const tableChildren = []
       const thead = el.querySelector("thead")
       const tbody = el.querySelector("tbody")
-
       if (thead) {
         const headerCells = Array.from(thead.querySelectorAll("th")).map(th => ({
-          type: "table-cell", header: true,
-          children: [{ text: th.textContent }],
+          type: "table-cell", header: true, children: [{ text: th.textContent }],
         }))
         tableChildren.push({ type: "table-header", children: headerCells })
       }
-
       if (tbody) {
         const rows = Array.from(tbody.querySelectorAll("tr")).map(tr => {
           const cells = Array.from(tr.querySelectorAll("td")).map(td => ({
-            type: "table-cell", header: false,
-            children: [{ text: td.textContent }],
+            type: "table-cell", header: false, children: [{ text: td.textContent }],
           }))
           return { type: "table-row", children: cells }
         }).filter(r => r.children.length > 0)
-        if (rows.length > 0) {
-          tableChildren.push({ type: "table-body", children: rows })
-        }
+        if (rows.length > 0) tableChildren.push({ type: "table-body", children: rows })
       }
-
-      return tableChildren.length > 0
-        ? { type: "table", children: tableChildren }
-        : null
+      return tableChildren.length > 0 ? { type: "table", children: tableChildren } : null
     }
     default: {
       const styleAttr  = el.getAttribute("style") || ""

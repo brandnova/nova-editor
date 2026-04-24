@@ -6,8 +6,8 @@ import "./index.css"
 const DEFAULT_OPTIONS = {
   elementId:     "nova-editor",
   initialHTML:   "",
-  preset:        "valiux",           // named UI theme
-  toolbar:       "full",             // toolbar preset
+  uiPreset:      "valiux",   // visual theme preset name
+  toolbar:       "full",     // toolbar button set: "minimal"|"standard"|"full"
   colorMode:     "dark",
   glass:         true,
   compact:       false,
@@ -18,19 +18,14 @@ const DEFAULT_OPTIONS = {
   autoFocus:     false,
   outputFormat:  "html",
   hiddenInputId: null,
-  branding:      null,               // { logo, name } or null
-  uiConfig:      {},                 // arbitrary theme overrides
+  branding:      null,
+  uiConfig:      {},
+  toolbarConfig: null,
   onChange:      null,
   onHTMLChange:  null,
 }
 
 window.NovaEditor = {
-  /**
-   * Mount the editor.
-   *
-   * @param {object} options — see DEFAULT_OPTIONS above
-   * @returns {{ destroy, getHTML, setHTML, getElement }}
-   */
   init(options = {}) {
     const cfg = { ...DEFAULT_OPTIONS, ...options }
 
@@ -40,15 +35,18 @@ window.NovaEditor = {
       return null
     }
 
-    let editorRef = null
-
     const EditorWrapper = () =>
       React.createElement(NovaEditor, {
-        ref: (r) => { editorRef = r },
         initialHTML:   cfg.initialHTML,
-        preset:        cfg.preset,
+        // toolbar preset → the NovaEditor component prop is called `preset`
+        preset:        cfg.toolbar,
         toolbarConfig: cfg.toolbarConfig || null,
-        uiConfig:      { preset: cfg.preset, glass: cfg.glass, compact: cfg.compact, ...cfg.uiConfig },
+        uiConfig: {
+          preset:  cfg.uiPreset,
+          glass:   cfg.glass,
+          compact: cfg.compact,
+          ...cfg.uiConfig,
+        },
         colorMode:     cfg.colorMode,
         glass:         cfg.glass,
         placeholder:   cfg.placeholder,
@@ -74,7 +72,6 @@ window.NovaEditor = {
     }
   },
 
-  /** Helper: build a toolbar config from group names */
   createToolbarConfig(groups = []) {
     const all = {
       formatting: ["bold","italic","underline","strikethrough","code"],
@@ -85,15 +82,15 @@ window.NovaEditor = {
       fullscreen: ["fullscreen"],
     }
     const config = {}
-    groups.forEach((g) => { if (all[g]) config[g] = all[g] })
+    groups.forEach(g => { if (all[g]) config[g] = all[g] })
     return config
   },
 }
 
-// ── Auto-init via data attributes ─────────────────────────────────────────────
+// ── Auto-init ──────────────────────────────────────────────────────────────────
 
 document.addEventListener("DOMContentLoaded", () => {
-  document.querySelectorAll("[data-nova-editor]").forEach((el) => {
+  document.querySelectorAll("[data-nova-editor]").forEach(el => {
     const d = el.dataset
 
     let uiConfig = {}
@@ -109,7 +106,7 @@ document.addEventListener("DOMContentLoaded", () => {
     window.NovaEditor.init({
       elementId:     el.id,
       initialHTML:   d.initialHtml  || "",
-      preset:        d.uiPreset     || "valiux",
+      uiPreset:      d.uiPreset     || "valiux",
       toolbar:       d.toolbar      || "full",
       colorMode:     d.colorMode    || "dark",
       glass:         d.glass        !== "false",

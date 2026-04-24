@@ -11,128 +11,230 @@
 // ── Built-in named themes ─────────────────────────────────────────────────────
 
 export const NAMED_THEMES = {
+
+  // ── Existing themes ──────────────────────────────────────────────────────
+
   /**
-   * Valiux default: Amber on deep dark with glass morphism.
+   * valiux — Amber on deep dark, glassmorphism.
+   * Good for: creative tools, dark-mode-first apps, personal brands.
    */
   valiux: {
-    colorMode: "dark",
-    glass: true,
-    colors: {
-      primary:       "#f59e0b",
-      primaryLight:  "#fde68a",
-      primaryDark:   "#b45309",
-      primaryFg:     "#1c1008",
-    },
-    typography: {
-      font: "'Syne', sans-serif",
-      monoFont: "'JetBrains Mono', monospace",
-      fontSize: "16px",
-      lineHeight: "1.75",
-    },
-    borders: {
-      radius: "0.75rem",
-      radiusBtn: "0.375rem",
-      width: "1px",
-    },
-    toolbar: {
-      size: "2.25rem",
-      iconSize: "1rem",
-      compact: false,
-    },
+    colorMode: "dark", glass: true,
+    colors: { primary: "#f59e0b", primaryLight: "#fde68a", primaryDark: "#b45309", primaryFg: "#1c1008" },
+    typography: { font: "'Syne', sans-serif", monoFont: "'JetBrains Mono', monospace", fontSize: "16px", lineHeight: "1.75" },
+    borders: { radius: "0.75rem", radiusBtn: "0.375rem", width: "1px" },
+    toolbar: { size: "2.25rem", iconSize: "1rem", compact: false },
     shadow: "0 4px 32px rgba(0,0,0,0.5)",
   },
 
   /**
-   * Clean light theme — suitable for client-facing apps.
+   * clean — Light, minimal amber accents.
+   * Good for: standard CMS fields, admin panels, straightforward content editing.
    */
   clean: {
-    colorMode: "light",
-    glass: false,
-    colors: {
-      primary:       "#f59e0b",
-      primaryLight:  "#fef3c7",
-      primaryDark:   "#92400e",
-      primaryFg:     "#ffffff",
-    },
-    typography: {
-      font: "'Syne', sans-serif",
-      monoFont: "'JetBrains Mono', monospace",
-      fontSize: "16px",
-      lineHeight: "1.75",
-    },
-    borders: {
-      radius: "0.5rem",
-      radiusBtn: "0.25rem",
-      width: "1px",
-    },
-    toolbar: {
-      size: "2rem",
-      iconSize: "0.9rem",
-      compact: false,
-    },
-    shadow: "0 2px 16px rgba(255, 255, 255, 0.06)",
+    colorMode: "light", glass: false,
+    colors: { primary: "#f59e0b", primaryLight: "#fef3c7", primaryDark: "#92400e", primaryFg: "#ffffff" },
+    typography: { font: "'Syne', sans-serif", monoFont: "'JetBrains Mono', monospace", fontSize: "16px", lineHeight: "1.75" },
+    borders: { radius: "0.5rem", radiusBtn: "0.25rem", width: "1px" },
+    toolbar: { size: "2rem", iconSize: "0.9rem", compact: false },
+    shadow: "0 2px 16px rgba(0,0,0,0.06)",
   },
 
   /**
-   * Compact utility mode — tight toolbar, no shadow, square corners.
+   * utility — No radius, compact, system font.
+   * Good for: dense admin dashboards, form builders, dev tools.
    */
   utility: {
-    colorMode: "light",
-    glass: false,
-    colors: {
-      primary:       "#f59e0b",
-      primaryLight:  "#fef3c7",
-      primaryDark:   "#92400e",
-      primaryFg:     "#ffffff",
-    },
-    typography: {
-      font: "system-ui, sans-serif",
-      monoFont: "monospace",
-      fontSize: "14px",
-      lineHeight: "1.6",
-    },
-    borders: {
-      radius: "0",
-      radiusBtn: "0",
-      width: "1px",
-    },
-    toolbar: {
-      size: "1.75rem",
-      iconSize: "0.8rem",
-      compact: true,
-    },
+    colorMode: "light", glass: false,
+    colors: { primary: "#f59e0b", primaryLight: "#fef3c7", primaryDark: "#92400e", primaryFg: "#ffffff" },
+    typography: { font: "system-ui, sans-serif", monoFont: "monospace", fontSize: "14px", lineHeight: "1.6" },
+    borders: { radius: "0", radiusBtn: "0", width: "1px" },
+    toolbar: { size: "1.75rem", iconSize: "0.8rem", compact: true },
     shadow: "none",
   },
 
   /**
-   * Rounded soft mode — pill buttons, generous radius.
+   * soft — Pill buttons, generous radius.
+   * Good for: consumer apps, social features, friendly UI.
    */
   soft: {
-    colorMode: "light",
-    glass: false,
+    colorMode: "light", glass: false,
+    colors: { primary: "#f59e0b", primaryLight: "#fde68a", primaryDark: "#b45309", primaryFg: "#1c1008" },
+    typography: { font: "'Syne', sans-serif", monoFont: "'JetBrains Mono', monospace", fontSize: "16px", lineHeight: "1.8" },
+    borders: { radius: "1.25rem", radiusBtn: "999px", width: "1.5px" },
+    toolbar: { size: "2.25rem", iconSize: "1rem", compact: false },
+    shadow: "0 8px 32px rgba(245,158,11,0.12)",
+  },
+
+  // ── New themes ───────────────────────────────────────────────────────────
+
+  /**
+   * notion — Document-first, ultra-clean white, minimal chrome.
+   * Inspired by: Notion, Linear, Craft.
+   * Good for: note-taking apps, wikis, documentation platforms,
+   *           any app where the content is the UI.
+   */
+  notion: {
+    colorMode: "light", glass: false,
     colors: {
-      primary:       "#f59e0b",
-      primaryLight:  "#fde68a",
-      primaryDark:   "#b45309",
-      primaryFg:     "#1c1008",
+      primary:      "#2383e2",   // Notion's blue
+      primaryLight: "#e8f3fe",
+      primaryDark:  "#1565c0",
+      primaryFg:    "#ffffff",
     },
     typography: {
-      font: "'Syne', sans-serif",
-      monoFont: "'JetBrains Mono', monospace",
-      fontSize: "16px",
-      lineHeight: "1.8",
+      font:       "-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+      monoFont:   "SFMono-Regular, 'SF Mono', Consolas, monospace",
+      fontSize:   "16px",
+      lineHeight: "1.75",
     },
-    borders: {
-      radius: "1.25rem",
-      radiusBtn: "999px",
-      width: "1.5px",
+    borders: { radius: "0.375rem", radiusBtn: "0.25rem", width: "1px" },
+    toolbar: { size: "2rem", iconSize: "0.875rem", compact: false },
+    shadow: "0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06)",
+  },
+
+  /**
+   * midnight — Deep navy, indigo/violet accents, subtle glow.
+   * Inspired by: Linear, Vercel, Discord.
+   * Good for: developer tools, SaaS dashboards, dark-mode-first products.
+   */
+  midnight: {
+    colorMode: "dark", glass: false,
+    colors: {
+      primary:      "#818cf8",   // indigo-400
+      primaryLight: "#c7d2fe",
+      primaryDark:  "#4f46e5",
+      primaryFg:    "#1e1b4b",
     },
-    toolbar: {
-      size: "2.25rem",
-      iconSize: "1rem",
-      compact: false,
+    typography: {
+      font:       "Inter, -apple-system, BlinkMacSystemFont, sans-serif",
+      monoFont:   "'JetBrains Mono', 'Fira Code', monospace",
+      fontSize:   "15px",
+      lineHeight: "1.7",
     },
-    shadow: "0 8px 32px rgba(245,158,11,0.12)",
+    borders: { radius: "0.5rem", radiusBtn: "0.375rem", width: "1px" },
+    toolbar: { size: "2rem", iconSize: "0.9rem", compact: false },
+    shadow: "0 4px 24px rgba(0,0,0,0.6)",
+  },
+
+  /**
+   * forest — Earthy green primary, warm cream background.
+   * Inspired by: Bear, Ulysses, iA Writer.
+   * Good for: writing-focused apps, journaling, long-form content platforms.
+   */
+  forest: {
+    colorMode: "light", glass: false,
+    colors: {
+      primary:      "#16a34a",   // green-600
+      primaryLight: "#dcfce7",
+      primaryDark:  "#14532d",
+      primaryFg:    "#ffffff",
+    },
+    typography: {
+      font:       "Georgia, 'Times New Roman', serif",
+      monoFont:   "'JetBrains Mono', Consolas, monospace",
+      fontSize:   "17px",
+      lineHeight: "1.85",
+    },
+    borders: { radius: "0.5rem", radiusBtn: "0.25rem", width: "1px" },
+    toolbar: { size: "2rem", iconSize: "0.9rem", compact: false },
+    shadow: "0 2px 12px rgba(0,0,0,0.06)",
+  },
+
+  /**
+   * newsprint — High contrast, editorial serif typography.
+   * Inspired by: Medium, Substack, newspaper CMSes.
+   * Good for: publishing platforms, blog editors, editorial tools.
+   */
+  newsprint: {
+    colorMode: "light", glass: false,
+    colors: {
+      primary:      "#dc2626",   // red-600 — editorial red
+      primaryLight: "#fee2e2",
+      primaryDark:  "#991b1b",
+      primaryFg:    "#ffffff",
+    },
+    typography: {
+      font:       "'Georgia', 'Palatino Linotype', serif",
+      monoFont:   "Courier, 'Courier New', monospace",
+      fontSize:   "17px",
+      lineHeight: "1.9",
+    },
+    borders: { radius: "0", radiusBtn: "0", width: "2px" },
+    toolbar: { size: "2rem", iconSize: "0.9rem", compact: false },
+    shadow: "none",
+  },
+
+  /**
+   * terminal — Pure black, phosphor green, monospace everything.
+   * Inspired by: VS Code terminal, Hyper, hacker aesthetics.
+   * Good for: developer blogs, code-heavy documentation, CLI-adjacent tools.
+   */
+  terminal: {
+    colorMode: "dark", glass: false,
+    colors: {
+      primary:      "#22c55e",   // green-500 phosphor
+      primaryLight: "#bbf7d0",
+      primaryDark:  "#15803d",
+      primaryFg:    "#000000",
+    },
+    typography: {
+      font:       "'JetBrains Mono', 'Fira Code', 'Courier New', monospace",
+      monoFont:   "'JetBrains Mono', 'Courier New', monospace",
+      fontSize:   "14px",
+      lineHeight: "1.65",
+    },
+    borders: { radius: "2px", radiusBtn: "2px", width: "1px" },
+    toolbar: { size: "1.875rem", iconSize: "0.85rem", compact: true },
+    shadow: "0 0 0 1px rgba(34,197,94,0.15), 0 4px 24px rgba(0,0,0,0.8)",
+  },
+
+  /**
+   * social — Rounded, blue primary, Facebook/Twitter post-composer feel.
+   * Inspired by: Facebook composer, LinkedIn post editor.
+   * Good for: social features, comment boxes, user-generated content fields.
+   */
+  social: {
+    colorMode: "light", glass: false,
+    colors: {
+      primary:      "#1877f2",   // Facebook blue
+      primaryLight: "#e7f0fd",
+      primaryDark:  "#0d6efd",
+      primaryFg:    "#ffffff",
+    },
+    typography: {
+      font:       "Helvetica, Arial, sans-serif",
+      monoFont:   "monospace",
+      fontSize:   "15px",
+      lineHeight: "1.6",
+    },
+    borders: { radius: "0.75rem", radiusBtn: "0.375rem", width: "1px" },
+    toolbar: { size: "2rem", iconSize: "0.875rem", compact: false },
+    shadow: "0 2px 8px rgba(0,0,0,0.08)",
+  },
+
+  /**
+   * aurora — Teal/cyan on very dark, subtle gradient feel.
+   * Inspired by: Figma, Framer, modern design tools.
+   * Good for: design tools, creative platforms, portfolio editors.
+   */
+  aurora: {
+    colorMode: "dark", glass: true,
+    colors: {
+      primary:      "#2dd4bf",   // teal-400
+      primaryLight: "#99f6e4",
+      primaryDark:  "#0f766e",
+      primaryFg:    "#042f2e",
+    },
+    typography: {
+      font:       "Inter, -apple-system, sans-serif",
+      monoFont:   "'JetBrains Mono', monospace",
+      fontSize:   "15px",
+      lineHeight: "1.7",
+    },
+    borders: { radius: "0.625rem", radiusBtn: "0.375rem", width: "1px" },
+    toolbar: { size: "2.125rem", iconSize: "0.9rem", compact: false },
+    shadow: "0 4px 32px rgba(0,0,0,0.6)",
   },
 }
 
