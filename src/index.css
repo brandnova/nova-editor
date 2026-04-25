@@ -1,75 +1,76 @@
-@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 /* ─────────────────────────────────────────────────────────────────────────────
-   CSS Custom Properties
+   CSS Custom Properties — ALL values come from the active theme via inline
+   style vars on .ne-root. The :root block below only provides safe fallbacks
+   for any var() that might be read before the theme resolves (e.g. during SSR
+   or before JS runs). These are the base-light values.
 ───────────────────────────────────────────────────────────────────────────── */
 
 :root {
-  --ne-primary:        #f59e0b;
-  --ne-primary-light:  #fde68a;
-  --ne-primary-dark:   #b45309;
-  --ne-primary-fg:     #1c1008;
-  --ne-bg:             #ffffff;
-  --ne-surface:        #fafafa;
-  --ne-toolbar-bg:     #fffbeb;
-  --ne-border:         #e5e7eb;
-  --ne-text:           #111827;
-  --ne-text-muted:     #6b7280;
-  --ne-hover:          #fef3c7;
-  --ne-active-bg:      #fde68a;
-  --ne-active-text:    #92400e;
-  --ne-radius:         0.75rem;
-  --ne-radius-btn:     0.375rem;
-  --ne-border-width:   1px;
-  --ne-toolbar-size:   2.25rem;
-  --ne-icon-size:      1rem;
-  --ne-font:           'Syne', sans-serif;
-  --ne-mono-font:      'JetBrains Mono', monospace;
-  --ne-shadow:         0 4px 24px rgba(0,0,0,0.08);
+  --ne-primary:         #4b5563;
+  --ne-primary-light:   #f3f4f6;
+  --ne-primary-dark:    #1f2937;
+  --ne-primary-fg:      #ffffff;
+  --ne-bg:              #ffffff;
+  --ne-toolbar-bg:      #f9fafb;
+  --ne-border:          #e5e7eb;
+  --ne-text:            #111827;
+  --ne-text-muted:      #9ca3af;
+  --ne-hover:           #f3f4f6;
+  --ne-active-bg:       #e5e7eb;
+  --ne-active-text:     #111827;
   --ne-scrollbar-track: transparent;
-  --ne-scrollbar-thumb: rgba(245,158,11,0.25);
-  --ne-scrollbar-hover: rgba(245,158,11,0.45);
-  /* Offset for sticky toolbar when a sticky nav is present.
-     Set this on the host page: e.g. --ne-sticky-top: 56px        */
-  --ne-sticky-top: 0px;
-}
-
-[data-ne-theme="dark"] {
-  --ne-bg:             #0f0f0f;
-  --ne-surface:        #1a1a1a;
-  --ne-toolbar-bg:     #141414;
-  --ne-border:         rgba(245,158,11,0.15);
-  --ne-text:           #f5f0e8;
-  --ne-text-muted:     #a1998c;
-  --ne-hover:          rgba(245,158,11,0.1);
-  --ne-active-bg:      rgba(245,158,11,0.2);
-  --ne-active-text:    #fcd34d;
-  --ne-shadow:         0 4px 32px rgba(0,0,0,0.5);
-  --ne-scrollbar-track: transparent;
-  --ne-scrollbar-thumb: rgba(245,158,11,0.2);
-  --ne-scrollbar-hover: rgba(245,158,11,0.4);
+  --ne-scrollbar-thumb: rgba(107,114,128,0.3);
+  --ne-scrollbar-hover: rgba(107,114,128,0.5);
+  --ne-radius:          0.5rem;
+  --ne-radius-btn:      0.25rem;
+  --ne-border-width:    1px;
+  --ne-toolbar-size:    2rem;
+  --ne-icon-size:       0.875rem;
+  --ne-font:            system-ui, sans-serif;
+  --ne-mono-font:       ui-monospace, monospace;
+  --ne-font-size:       16px;
+  --ne-line-height:     1.75;
+  --ne-shadow:          0 1px 4px rgba(0,0,0,0.06);
+  --ne-sticky-top:      0px;
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
-   Scrollbar
+   NOTE: There is NO [data-ne-theme="dark"] selector in this file.
+   Dark/light surface values are injected by the resolver as inline CSS vars
+   on the .ne-root element. This eliminates cross-theme colour bleed.
 ───────────────────────────────────────────────────────────────────────────── */
 
-.ne-content::-webkit-scrollbar { width: 6px; }
-.ne-content::-webkit-scrollbar-track { background: var(--ne-scrollbar-track); border-radius: 999px; }
-.ne-content::-webkit-scrollbar-thumb { background: var(--ne-scrollbar-thumb); border-radius: 999px; }
+/* ─────────────────────────────────────────────────────────────────────────────
+   Scrollbar — driven entirely by theme vars
+───────────────────────────────────────────────────────────────────────────── */
+
+.ne-content::-webkit-scrollbar        { width: 6px; }
+.ne-content::-webkit-scrollbar-track  { background: var(--ne-scrollbar-track); }
+.ne-content::-webkit-scrollbar-thumb  { background: var(--ne-scrollbar-thumb); border-radius: 999px; }
 .ne-content::-webkit-scrollbar-thumb:hover { background: var(--ne-scrollbar-hover); }
 .ne-content { scrollbar-width: thin; scrollbar-color: var(--ne-scrollbar-thumb) var(--ne-scrollbar-track); }
 
-.ne-content pre::-webkit-scrollbar { height: 4px; }
-.ne-content pre::-webkit-scrollbar-track { background: transparent; }
-.ne-content pre::-webkit-scrollbar-thumb { background: var(--ne-scrollbar-thumb); border-radius: 999px; }
+.ne-content pre::-webkit-scrollbar        { height: 4px; }
+.ne-content pre::-webkit-scrollbar-track  { background: transparent; }
+.ne-content pre::-webkit-scrollbar-thumb  { background: var(--ne-scrollbar-thumb); border-radius: 999px; }
+
+.ne-table-wrapper::-webkit-scrollbar        { height: 5px; }
+.ne-table-wrapper::-webkit-scrollbar-track  { background: transparent; }
+.ne-table-wrapper::-webkit-scrollbar-thumb  { background: var(--ne-scrollbar-thumb); border-radius: 999px; }
+.ne-table-wrapper::-webkit-scrollbar-thumb:hover { background: var(--ne-scrollbar-hover); }
+.ne-table-wrapper {
+  scrollbar-width: thin;
+  scrollbar-color: var(--ne-scrollbar-thumb) var(--ne-scrollbar-track);
+}
 
 /* ─────────────────────────────────────────────────────────────────────────────
-   Root
+   Root wrapper — receives all CSS vars as inline styles from the resolver
 ───────────────────────────────────────────────────────────────────────────── */
 
 .ne-root {
@@ -79,10 +80,8 @@
 
 /* ─────────────────────────────────────────────────────────────────────────────
    Container
-   KEY FIX: We do NOT use overflow:hidden (breaks sticky toolbar).
-   Instead, corner rounding is applied directly to the first child (toolbar)
-   and last child (footer / content) so backgrounds don't paint over the
-   container's border-radius.
+   No overflow:hidden — sticky toolbar fix from v2.0.x is preserved.
+   Corner radius is applied to first/last children instead.
 ───────────────────────────────────────────────────────────────────────────── */
 
 .ne-container {
@@ -100,30 +99,15 @@
   box-shadow: var(--ne-shadow), 0 0 0 3px color-mix(in srgb, var(--ne-primary) 15%, transparent);
 }
 
-/* Clip children to the container's rounded corners without overflow:hidden */
-.ne-toolbar {
-  border-radius: var(--ne-radius) var(--ne-radius) 0 0;
-}
+.ne-container.has-max-height { overflow: hidden; }
 
-/* When there IS a footer, it gets the bottom radius */
-.ne-footer {
-  border-radius: 0 0 var(--ne-radius) var(--ne-radius);
-}
-
-/* When there is NO footer, the content area gets the bottom radius */
-.ne-content:last-child {
-  border-radius: 0 0 var(--ne-radius) var(--ne-radius);
-}
-
-/* max-height mode: content scrolls, container clips */
-.ne-container.has-max-height {
-  overflow: hidden;
-}
+/* Corner radius applied to children (not overflow:hidden) */
+.ne-toolbar { border-radius: var(--ne-radius) var(--ne-radius) 0 0; }
+.ne-footer  { border-radius: 0 0 var(--ne-radius) var(--ne-radius); }
+.ne-content:last-child { border-radius: 0 0 var(--ne-radius) var(--ne-radius); }
 
 /* ─────────────────────────────────────────────────────────────────────────────
    Sticky toolbar
-   Uses --ne-sticky-top so it sits below any host-page sticky nav.
-   Set --ne-sticky-top on the page or the .ne-root element to match nav height.
 ───────────────────────────────────────────────────────────────────────────── */
 
 .ne-sticky-toolbar .ne-toolbar {
@@ -139,7 +123,7 @@
 .ne-toolbar {
   background: var(--ne-toolbar-bg);
   border-bottom: var(--ne-border-width) solid var(--ne-border);
-  padding: 0.5rem 0.75rem;
+  padding: 0.375rem 0.625rem;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -155,15 +139,13 @@
   gap: 0.125rem;
   padding: 0.125rem;
   border-radius: var(--ne-radius-btn);
-  background: color-mix(in srgb, var(--ne-primary) 6%, transparent);
 }
 
-[data-ne-theme="dark"] .ne-toolbar-group { background: rgba(255,255,255,0.04); }
-
 .ne-toolbar-sep {
-  width: 1px; height: 1.25rem;
+  width: 1px; height: 1.125rem;
   background: var(--ne-border);
-  margin: 0 0.25rem; flex-shrink: 0;
+  margin: 0 0.2rem; flex-shrink: 0;
+  opacity: 0.7;
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
@@ -181,7 +163,7 @@
 }
 
 .ne-btn svg { width: var(--ne-icon-size); height: var(--ne-icon-size); pointer-events: none; }
-.ne-btn:hover  { background: var(--ne-hover); color: var(--ne-primary); }
+.ne-btn:hover  { background: var(--ne-hover);     color: var(--ne-primary); }
 .ne-btn:active { transform: scale(0.92); }
 .ne-btn.active { background: var(--ne-active-bg); color: var(--ne-active-text); }
 .ne-btn:focus-visible { outline: 2px solid var(--ne-primary); outline-offset: 1px; }
@@ -193,72 +175,15 @@
 .ne-tooltip {
   position: absolute; bottom: calc(100% + 6px); left: 50%;
   transform: translateX(-50%);
-  background: #1a1a1a; color: #f5f0e8;
+  background: var(--ne-text); color: var(--ne-bg);
   font-size: 0.68rem; font-weight: 500; letter-spacing: 0.02em;
   padding: 3px 8px; border-radius: 4px;
   white-space: nowrap; pointer-events: none;
   opacity: 0; transition: opacity 0.15s 0.45s; z-index: 100;
+  font-family: var(--ne-font);
 }
 
-[data-ne-theme="dark"] .ne-tooltip { background: #2a2a2a; border: 1px solid rgba(245,158,11,0.2); }
 .ne-btn:hover .ne-tooltip { opacity: 1; }
-
-/* ─────────────────────────────────────────────────────────────────────────────
-   Branding strip — animated collapse
-───────────────────────────────────────────────────────────────────────────── */
-
-.ne-brand {
-  display: flex; align-items: center; gap: 0.4rem;
-  margin-left: auto; padding-left: 0.75rem;
-  flex-shrink: 0; position: relative;
-}
-
-.ne-brand-logo-wrap {
-  position: relative; display: flex; align-items: center;
-  cursor: pointer;
-}
-
-.ne-brand img {
-  height: 18px; width: auto; object-fit: contain; display: block;
-  transition: opacity 0.4s ease, transform 0.4s ease;
-}
-
-/* Collapsed state — logo shrinks to 14px and dims */
-.ne-brand.collapsed img {
-  height: 14px;
-  opacity: 0.45;
-}
-
-/* Name text */
-.ne-brand-name {
-  font-size: 0.65rem; font-weight: 700;
-  letter-spacing: 0.1em; text-transform: uppercase;
-  color: var(--ne-primary); line-height: 1;
-  transition: opacity 0.4s ease, max-width 0.4s ease;
-  overflow: hidden; max-width: 120px; white-space: nowrap;
-}
-
-.ne-brand.collapsed .ne-brand-name {
-  opacity: 0; max-width: 0; pointer-events: none;
-}
-
-/* Tooltip on collapsed logo */
-.ne-brand-logo-tooltip {
-  position: absolute; bottom: calc(100% + 6px); left: 50%;
-  transform: translateX(-50%);
-  background: #1a1a1a; color: #f5f0e8;
-  font-size: 0.65rem; font-weight: 600; letter-spacing: 0.05em;
-  text-transform: uppercase;
-  padding: 3px 8px; border-radius: 4px;
-  white-space: nowrap; pointer-events: none;
-  opacity: 0; transition: opacity 0.15s; z-index: 100;
-}
-
-[data-ne-theme="dark"] .ne-brand-logo-tooltip {
-  background: #2a2a2a; border: 1px solid rgba(245,158,11,0.25);
-}
-
-.ne-brand.collapsed .ne-brand-logo-wrap:hover .ne-brand-logo-tooltip { opacity: 1; }
 
 /* ─────────────────────────────────────────────────────────────────────────────
    Editor content area
@@ -269,8 +194,8 @@
   padding: 1.5rem;
   flex: 1;
   font-family: var(--ne-font);
-  font-size: 1rem; line-height: 1.75;
-  color: var(--ne-text); caret-color: var(--ne-primary);
+  color: var(--ne-text);
+  caret-color: var(--ne-primary);
 }
 
 .ne-container.has-max-height .ne-content { overflow-y: auto; }
@@ -279,23 +204,28 @@
 
 .ne-content [data-slate-placeholder] {
   color: var(--ne-text-muted) !important;
-  opacity: 0.5; pointer-events: none; user-select: none;
+  opacity: 0.6; pointer-events: none; user-select: none;
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
-   Typography
+   Typography — all driven by theme vars
 ───────────────────────────────────────────────────────────────────────────── */
 
-.ne-content h1 { font-size: 2rem;    font-weight: 700; line-height: 1.2; margin: 1rem 0 0.5rem; }
-.ne-content h2 { font-size: 1.5rem;  font-weight: 700; line-height: 1.3; margin: 0.875rem 0 0.5rem; }
-.ne-content h3 { font-size: 1.25rem; font-weight: 600; line-height: 1.4; margin: 0.75rem 0 0.4rem; }
+.ne-content {
+  font-size: var(--ne-font-size);
+  line-height: var(--ne-line-height);
+}
+
+.ne-content h1 { font-size: 2em;    font-weight: 700; line-height: 1.2; margin: 1rem 0 0.5rem; color: var(--ne-text); }
+.ne-content h2 { font-size: 1.5em;  font-weight: 700; line-height: 1.3; margin: 0.875rem 0 0.5rem; color: var(--ne-text); }
+.ne-content h3 { font-size: 1.25em; font-weight: 600; line-height: 1.4; margin: 0.75rem 0 0.4rem; color: var(--ne-text); }
 .ne-content p  { margin: 0.5rem 0; }
 
 .ne-content blockquote {
   border-left: 3px solid var(--ne-primary);
   padding: 0.5rem 0 0.5rem 1rem; margin: 0.75rem 0;
   color: var(--ne-text-muted);
-  background: color-mix(in srgb, var(--ne-primary) 5%, transparent);
+  background: color-mix(in srgb, var(--ne-primary) 8%, var(--ne-bg));
   border-radius: 0 6px 6px 0; font-style: italic;
 }
 
@@ -305,102 +235,118 @@
 
 /* Inline code */
 .ne-content code {
-  background: color-mix(in srgb, var(--ne-primary) 12%, transparent);
-  color: var(--ne-primary-dark); border-radius: 4px;
-  padding: 0.1em 0.4em; font-family: var(--ne-mono-font); font-size: 0.875em;
+  background: color-mix(in srgb, var(--ne-primary) 10%, var(--ne-bg));
+  color: var(--ne-primary-dark);
+  border-radius: 4px; padding: 0.1em 0.4em;
+  font-family: var(--ne-mono-font); font-size: 0.875em;
 }
-[data-ne-theme="dark"] .ne-content code { color: var(--ne-primary-light); }
 
-/* Code blocks — radius capped at 8px regardless of preset */
+/* Code block — radius capped so pill-radius themes don't make a circle */
 .ne-content pre {
-  background: color-mix(in srgb, var(--ne-primary) 6%, #111);
-  border: 1px solid var(--ne-border);
-  border-radius: clamp(4px, var(--ne-radius-btn), 8px);
+  background: color-mix(in srgb, var(--ne-primary) 5%, var(--ne-toolbar-bg));
+  border: var(--ne-border-width) solid var(--ne-border);
+  border-radius: clamp(2px, var(--ne-radius-btn), 8px);
   padding: 1rem; overflow-x: auto; margin: 0.75rem 0;
 }
-.ne-content pre code { background: none; padding: 0; border-radius: 0; font-size: 0.875rem; color: #fbbf24; }
-.ne-content hr { border: none; border-top: 1px solid var(--ne-border); margin: 1.5rem 0; }
+.ne-content pre code {
+  background: none; padding: 0; border-radius: 0;
+  font-size: 0.875rem; color: var(--ne-primary-dark);
+}
+
+.ne-content hr { border: none; border-top: var(--ne-border-width) solid var(--ne-border); margin: 1.5rem 0; }
 
 /* ─────────────────────────────────────────────────────────────────────────────
    Tables
-   - Wrapper div clips overflow-x and carries the border/radius
-   - table-layout: auto lets browsers size columns to content
-   - th cells span their column naturally via the table model
 ───────────────────────────────────────────────────────────────────────────── */
 
 .ne-table-wrapper {
-  overflow-x: auto;
-  margin: 0.75rem 0;
-  border-radius: 8px;
-  border: 1px solid var(--ne-border);
-  /* Styled scrollbar */
-  scrollbar-width: thin;
-  scrollbar-color: var(--ne-scrollbar-thumb) var(--ne-scrollbar-track);
+  overflow-x: auto; margin: 0.75rem 0;
+  border-radius: 8px; border: var(--ne-border-width) solid var(--ne-border);
 }
 
-.ne-table-wrapper::-webkit-scrollbar        { height: 5px; }
-.ne-table-wrapper::-webkit-scrollbar-track  { background: transparent; }
-.ne-table-wrapper::-webkit-scrollbar-thumb  { background: var(--ne-scrollbar-thumb); border-radius: 999px; }
-.ne-table-wrapper::-webkit-scrollbar-thumb:hover { background: var(--ne-scrollbar-hover); }
-
 .ne-content table {
-  /* min-content width so narrow tables don't stretch; wide ones scroll */
-  width: 100%;
-  min-width: max-content;
-  border-collapse: collapse;
-  font-size: 0.875rem;
-  table-layout: auto;
+  width: 100%; min-width: max-content;
+  border-collapse: collapse; font-size: 0.875rem; table-layout: auto;
 }
 
 .ne-content th {
-  background: color-mix(in srgb, var(--ne-primary) 10%, transparent);
+  background: color-mix(in srgb, var(--ne-primary) 8%, var(--ne-toolbar-bg));
   color: var(--ne-text); font-weight: 600;
   border-bottom: 2px solid var(--ne-border);
-  border-right: 1px solid var(--ne-border);
-  /* Let the browser distribute header cells evenly across columns */
-  padding: 0.5rem 0.875rem;
-  text-align: left;
-  white-space: nowrap;
-  /* Each th expands to fill its column — no explicit width needed when
-     table-layout:auto and the table has real td content to size from  */
+  border-right: var(--ne-border-width) solid var(--ne-border);
+  padding: 0.5rem 0.875rem; text-align: left; white-space: nowrap;
 }
-
 .ne-content th:last-child { border-right: none; }
 
 .ne-content td {
-  border-bottom: 1px solid var(--ne-border);
-  border-right: 1px solid var(--ne-border);
-  padding: 0.45rem 0.875rem;
-  color: var(--ne-text); vertical-align: top;
+  border-bottom: var(--ne-border-width) solid var(--ne-border);
+  border-right: var(--ne-border-width) solid var(--ne-border);
+  padding: 0.45rem 0.875rem; color: var(--ne-text); vertical-align: top;
 }
-
-.ne-content td:last-child  { border-right: none; }
-.ne-content tr:last-child td { border-bottom: none; }
+.ne-content td:last-child        { border-right: none; }
+.ne-content tr:last-child td     { border-bottom: none; }
 .ne-content tr:nth-child(even) td {
-  background: color-mix(in srgb, var(--ne-primary) 3%, transparent);
+  background: color-mix(in srgb, var(--ne-primary) 3%, var(--ne-bg));
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
-   Footer
+   Footer — renders when word count OR branding is present
 ───────────────────────────────────────────────────────────────────────────── */
 
 .ne-footer {
   background: var(--ne-toolbar-bg);
   border-top: var(--ne-border-width) solid var(--ne-border);
-  padding: 0.375rem 1rem;
-  display: flex; align-items: center; justify-content: flex-end; gap: 1rem;
+  padding: 0.375rem 0.875rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* branding left, stats right */
+  gap: 0.75rem;
   flex-shrink: 0;
 }
 
+/* ── Branding in footer ── */
+.ne-footer-brand {
+  display: flex; align-items: center; gap: 0.4rem;
+  cursor: default; flex-shrink: 0; overflow: hidden;
+}
+
+.ne-footer-brand-logo {
+  height: 16px; width: auto; object-fit: contain;
+  display: block; flex-shrink: 0;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.ne-footer-brand-logo:hover { opacity: 0.7; }
+
+.ne-footer-brand-name {
+  font-size: 0.63rem; font-weight: 700;
+  letter-spacing: 0.09em; text-transform: uppercase;
+  color: var(--ne-primary); line-height: 1; white-space: nowrap;
+  transition: opacity 0.3s ease, max-width 0.35s ease;
+  overflow: hidden; max-width: 160px;
+}
+
+/* Collapsed state — name slides away */
+.ne-footer-brand.name-hidden .ne-footer-brand-name {
+  opacity: 0; max-width: 0; pointer-events: none;
+}
+
+/* ── Stats cluster ── */
+.ne-footer-stats {
+  display: flex; align-items: center; gap: 0.75rem; flex-shrink: 0;
+}
+
 .ne-footer-stat {
-  font-size: 0.68rem; font-weight: 500;
-  letter-spacing: 0.04em; color: var(--ne-text-muted); text-transform: uppercase;
+  font-size: 0.65rem; font-weight: 500;
+  letter-spacing: 0.04em; color: var(--ne-text-muted);
+  text-transform: uppercase;
 }
 
 .ne-footer-fullscreen-badge {
-  font-size: 0.65rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
-  color: var(--ne-primary);
-  background: color-mix(in srgb, var(--ne-primary) 12%, transparent);
+  font-size: 0.62rem; font-weight: 600; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--ne-primary);
+  background: color-mix(in srgb, var(--ne-primary) 10%, transparent);
   padding: 0.15rem 0.5rem; border-radius: 999px;
 }
 
@@ -410,29 +356,17 @@
 
 .ne-fullscreen-wrap {
   position: fixed; inset: 0; z-index: 9999;
-  display: flex; flex-direction: column; background: var(--ne-bg);
+  display: flex; flex-direction: column;
+  background: var(--ne-bg);
 }
 
 .ne-fullscreen-wrap .ne-container {
   border-radius: 0; border: none; box-shadow: none; flex: 1; height: 100%;
 }
 
-/* In fullscreen the toolbar is always at the top — no sticky needed */
 .ne-fullscreen-wrap .ne-toolbar {
-  border-radius: 0;
-  position: relative !important;
-  top: auto !important;
+  border-radius: 0; position: relative !important; top: auto !important;
 }
-
-/* ─────────────────────────────────────────────────────────────────────────────
-   Glassmorphism
-───────────────────────────────────────────────────────────────────────────── */
-
-.ne-glass .ne-container                    { backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
-[data-ne-theme="dark"].ne-glass .ne-container { background: rgba(15,15,15,0.75); }
-[data-ne-theme="dark"].ne-glass .ne-toolbar   { background: rgba(20,20,20,0.8); }
-[data-ne-theme="dark"].ne-glass .ne-content   { background: rgba(15,15,15,0.6); }
-[data-ne-theme="dark"].ne-glass .ne-footer    { background: rgba(20,20,20,0.8); }
 
 /* ─────────────────────────────────────────────────────────────────────────────
    Transitions

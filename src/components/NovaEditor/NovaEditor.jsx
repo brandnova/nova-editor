@@ -9,8 +9,6 @@ import { parseMarkdown } from "./markdown"
 import { resolveTheme } from "../../theme-config"
 import { resolveToolbarConfig } from "../../presets"
 
-// ── Hotkeys ───────────────────────────────────────────────────────────────────
-
 const HOTKEYS = {
   "mod+b":       "bold",
   "mod+i":       "italic",
@@ -23,80 +21,98 @@ const HOTKEYS = {
   "f11":         "fullscreen",
 }
 
-const LIST_TYPES        = ["numbered-list", "bulleted-list"]
-const TEXT_ALIGN_TYPES  = ["left", "center", "right", "justify"]
+const LIST_TYPES       = ["numbered-list", "bulleted-list"]
+const TEXT_ALIGN_TYPES = ["left", "center", "right", "justify"]
+const MD_SIGNALS       = ["# ", "## ", "### ", "**", "~~", "```", "> ", "- ", "---", "___", "***", "|"]
 
-// Markdown paste is triggered when any of these patterns are detected
-const MD_SIGNALS = ["# ", "## ", "### ", "**", "~~", "```", "> ", "- ", "---", "___", "***", "|"]
+// ── Footer branding component ─────────────────────────────────────────────────
+
+const FooterBranding = ({ branding }) => {
+  const [nameHidden, setNameHidden] = useState(false)
+
+  const hasLogo = !!branding?.logo
+  const hasName = !!branding?.name
+
+  // Only show collapse toggle when both are present
+  const handleLogoClick = () => {
+    if (hasLogo && hasName) setNameHidden(v => !v)
+  }
+
+  return (
+    <div className={`ne-footer-brand${nameHidden ? " name-hidden" : ""}`}>
+      {hasLogo && (
+        <img
+          src={branding.logo}
+          alt={branding.name || "Brand logo"}
+          className="ne-footer-brand-logo"
+          onClick={handleLogoClick}
+          title={nameHidden ? branding.name : undefined}
+        />
+      )}
+      {hasName && (
+        <span className="ne-footer-brand-name">{branding.name}</span>
+      )}
+    </div>
+  )
+}
 
 // ── Main component ────────────────────────────────────────────────────────────
 
 const NovaEditor = ({
-  // Content
   initialValue  = null,
   initialHTML   = "",
   placeholder   = "Start writing…",
-
-  // Output
-  outputFormat  = "html",       // "html" | "slate"
-  onChange      = null,         // (slateNodes) => void
-  onHTMLChange  = null,         // (htmlString) => void
-  hiddenInputId = null,         // sync HTML to a <input type="hidden"> or <textarea>
-
-  // Toolbar preset
-  preset        = "full",       // "minimal" | "standard" | "full"
-  toolbarConfig = null,         // custom toolbarConfig overrides preset
-
-  // Theme / UI
+  outputFormat  = "html",
+  onChange      = null,
+  onHTMLChange  = null,
+  hiddenInputId = null,
+  preset        = "full",
+  toolbarConfig = null,
   uiConfig      = {},
-  colorMode     = null,         // "light" | "dark" | "system" — overrides uiConfig.colorMode
-  glass         = null,         // boolean — overrides uiConfig.glass
-
-  // Features
+  colorMode     = null,
   showWordCount   = true,
   stickyToolbar   = true,
-  maxHeight       = null,       // number (px) — makes content area scroll internally
+  maxHeight       = null,
   autoFocus       = false,
-
-  // Branding
-  branding  = null,             // { logo?: string, name?: string } | null
-
-  className = "",
+  branding        = null,
+  className       = "",
 }) => {
 
-  // ── Theme resolution ─────────────────────────────────────────────────────
+  // ── Theme ──────────────────────────────────────────────────────────────────
 
   const resolved = useMemo(() => resolveTheme({
     ...uiConfig,
     ...(colorMode !== null ? { colorMode } : {}),
-    ...(glass     !== null ? { glass }     : {}),
-  }), [uiConfig, colorMode, glass])
+  }), [uiConfig, colorMode])
 
-  // System color scheme listener
+  // System color scheme listener — only active when colorMode is "system"
   const [systemDark, setSystemDark] = useState(
     () => typeof window !== "undefined"
       ? window.matchMedia("(prefers-color-scheme: dark)").matches
       : false
   )
   useEffect(() => {
-    if (resolved.colorMode !== "system") return
+    const effectiveMode = colorMode ?? uiConfig.colorMode
+    if (effectiveMode !== "system") return
     const mq      = window.matchMedia("(prefers-color-scheme: dark)")
     const handler = (e) => setSystemDark(e.matches)
     mq.addEventListener("change", handler)
     return () => mq.removeEventListener("change", handler)
-  }, [resolved.colorMode])
+  }, [colorMode, uiConfig.colorMode])
 
-  const isDark = resolved.colorMode === "dark"
-    || (resolved.colorMode === "system" && systemDark)
+  const effectiveColorMode = colorMode ?? uiConfig.colorMode ?? resolved.colorMode
+  const isDark = effectiveColorMode === "dark"
+    || (effectiveColorMode === "system" && systemDark)
+    || (effectiveColorMode === undefined && resolved.colorMode === "dark")
 
-  // ── Toolbar config ────────────────────────────────────────────────────────
+  // ── Toolbar config ─────────────────────────────────────────────────────────
 
   const effectiveToolbarConfig = useMemo(
     () => resolveToolbarConfig(preset, toolbarConfig),
     [preset, toolbarConfig]
   )
 
-  // ── Initial Slate value ───────────────────────────────────────────────────
+  // ── Initial value ──────────────────────────────────────────────────────────
 
   const getInitial = () => {
     if (initialHTML?.trim()) return parseHTMLToSlate(initialHTML)
@@ -104,14 +120,14 @@ const NovaEditor = ({
     return [{ type: "paragraph", children: [{ text: "" }] }]
   }
 
-  const [value,       setValue]       = useState(getInitial)
-  const [wordCount,   setWordCount]   = useState(0)
-  const [charCount,   setCharCount]   = useState(0)
+  const [value,        setValue]        = useState(getInitial)
+  const [wordCount,    setWordCount]    = useState(0)
+  const [charCount,    setCharCount]    = useState(0)
   const [isFullscreen, setIsFullscreen] = useState(false)
 
   const rootRef = useRef(null)
 
-  // ── Slate editor instance ─────────────────────────────────────────────────
+  // ── Slate editor ───────────────────────────────────────────────────────────
 
   const editor = useMemo(() => {
     const e = withHistory(withReact(createEditor()))
@@ -128,11 +144,10 @@ const NovaEditor = ({
       }
       normalizeNode([node, path])
     }
-
     return e
   }, [])
 
-  // ── Fullscreen ────────────────────────────────────────────────────────────
+  // ── Fullscreen ─────────────────────────────────────────────────────────────
 
   const toggleFullscreen = useCallback(async () => {
     if (!rootRef.current) return
@@ -143,8 +158,7 @@ const NovaEditor = ({
         await document.exitFullscreen()
       }
     } catch {
-      // Fallback: toggle class-based fullscreen
-      setIsFullscreen((v) => !v)
+      setIsFullscreen(v => !v)
     }
   }, [])
 
@@ -154,34 +168,24 @@ const NovaEditor = ({
     return () => document.removeEventListener("fullscreenchange", handler)
   }, [])
 
-  // ── Renderers ─────────────────────────────────────────────────────────────
+  // ── Renderers ──────────────────────────────────────────────────────────────
 
-  const renderElement = useCallback(
-    (props) => <Element {...props} isDark={isDark} />,
-    [isDark]
-  )
-  const renderLeaf = useCallback((props) => <Leaf {...props} />, [])
+  const renderElement = useCallback((props) => <Element {...props} />, [])
+  const renderLeaf    = useCallback((props) => <Leaf    {...props} />, [])
 
-  // ── Change handler ────────────────────────────────────────────────────────
+  // ── Change handler ─────────────────────────────────────────────────────────
 
   const handleChange = useCallback((newValue) => {
     setValue(newValue)
-
-    // Word / character count
     const plain = newValue
-      .map((n) =>
-        SlateElement.isElement(n)
-          ? n.children.map((c) => (Text.isText(c) ? c.text : "")).join("")
-          : ""
-      )
+      .map(n => SlateElement.isElement(n)
+        ? n.children.map(c => Text.isText(c) ? c.text : "").join("")
+        : "")
       .join(" ")
     setWordCount(plain.trim() ? plain.trim().split(/\s+/).length : 0)
     setCharCount(plain.length)
 
-    // HTML output
     const html = serializeToHTML(newValue)
-
-    // Sync to hidden input / textarea (supports Django forms, Alpine, vanilla)
     if (hiddenInputId) {
       const el = document.getElementById(hiddenInputId)
       if (el) {
@@ -190,15 +194,13 @@ const NovaEditor = ({
         el.dispatchEvent(new Event("input",  { bubbles: true }))
       }
     }
-
     if (outputFormat === "html" && onHTMLChange) onHTMLChange(html)
     if (onChange) onChange(newValue)
   }, [onHTMLChange, onChange, outputFormat, hiddenInputId])
 
-  // ── Keyboard handler ──────────────────────────────────────────────────────
+  // ── Keyboard ───────────────────────────────────────────────────────────────
 
   const handleKeyDown = useCallback((event) => {
-    // Check registered hotkeys first
     for (const hotkey in HOTKEYS) {
       if (isHotkey(hotkey, event)) {
         event.preventDefault()
@@ -210,15 +212,12 @@ const NovaEditor = ({
         return
       }
     }
-
-    // Auto-reset heading → paragraph on Enter
     if (event.key === "Enter") {
       const { selection } = editor
       if (!selection) return
       const [match] = Array.from(Editor.nodes(editor, {
-        match: (n) =>
-          SlateElement.isElement(n) &&
-          ["heading-one", "heading-two", "heading-three"].includes(n.type),
+        match: n => SlateElement.isElement(n) &&
+          ["heading-one","heading-two","heading-three"].includes(n.type),
       }))
       if (match) {
         event.preventDefault()
@@ -228,25 +227,22 @@ const NovaEditor = ({
     }
   }, [editor, toggleFullscreen])
 
-  // ── Markdown paste ────────────────────────────────────────────────────────
+  // ── Markdown paste ─────────────────────────────────────────────────────────
 
   const handlePaste = useCallback((event) => {
     const text = event.clipboardData.getData("text/plain")
-    const isMarkdown =
-      MD_SIGNALS.some((sig) => text.includes(sig)) ||
-      /^\d+\. /m.test(text)
-
-    if (isMarkdown) {
+    const isMd = MD_SIGNALS.some(s => text.includes(s)) || /^\d+\. /m.test(text)
+    if (isMd) {
       event.preventDefault()
       Transforms.insertNodes(editor, parseMarkdown(text))
     }
   }, [editor])
 
-  // ── Public imperative API (exposed on DOM element) ────────────────────────
+  // ── Imperative API on DOM element ──────────────────────────────────────────
 
-  const getHTML = useCallback(() => serializeToHTML(value), [value])
+  const getHTML       = useCallback(() => serializeToHTML(value), [value])
   const getSlateValue = useCallback(() => value, [value])
-  const setHTML = useCallback((html) => {
+  const setHTML       = useCallback((html) => {
     const nodes = parseHTMLToSlate(html)
     editor.children = nodes
     Editor.normalize(editor, { force: true })
@@ -258,35 +254,26 @@ const NovaEditor = ({
     rootRef.current.__novaEditor = { getHTML, getSlateValue, setHTML }
   }, [getHTML, getSlateValue, setHTML])
 
-  // ── CSS classes ───────────────────────────────────────────────────────────
+  // ── Class / style derivations ──────────────────────────────────────────────
 
-  // The sticky toolbar class goes on ne-root (the outer wrapper), not the
-  // container. The .ne-sticky-toolbar .ne-toolbar rule in CSS then makes the
-  // toolbar sticky within the page scroll context — which only works when
-  // the container does NOT have overflow:hidden (i.e. no maxHeight set).
-  // When maxHeight IS set, the toolbar naturally stays at the top of the
-  // flex column, so stickiness isn't needed.
-  const useStickyClass  = stickyToolbar && !maxHeight && !isFullscreen
+  const useStickyClass = stickyToolbar && !maxHeight && !isFullscreen
 
   const rootClass = [
     "ne-root",
-    resolved.glass  ? "ne-glass"           : "",
     useStickyClass  ? "ne-sticky-toolbar"  : "",
     isFullscreen    ? "ne-fullscreen-wrap" : "",
     className,
   ].filter(Boolean).join(" ")
 
-  const containerClass = [
-    "ne-container",
-    maxHeight ? "has-max-height" : "",
-  ].filter(Boolean).join(" ")
-
-  // Container height style — set only when maxHeight or fullscreen
+  const containerClass = ["ne-container", maxHeight ? "has-max-height" : ""].filter(Boolean).join(" ")
   const containerStyle = isFullscreen
     ? { height: "100%", maxHeight: "100%" }
     : maxHeight
       ? { height: `${maxHeight}px`, maxHeight: `${maxHeight}px` }
       : {}
+
+  // Footer is visible if either stat or branding is needed
+  const showFooter = showWordCount || !!branding
 
   return (
     <div
@@ -298,26 +285,19 @@ const NovaEditor = ({
       <div className={containerClass} style={containerStyle}>
         <Slate editor={editor} initialValue={value} onValueChange={handleChange}>
 
-          {/* Toolbar */}
           <Toolbar
             toolbarConfig={effectiveToolbarConfig}
             isFullscreen={isFullscreen}
             compact={resolved.compact}
             onToggleFullscreen={toggleFullscreen}
-            branding={branding}
           />
 
-          {/* Editable area */}
           <div
             className="ne-content"
             role="textbox"
             aria-multiline="true"
             aria-label="Rich text editor"
-            style={{
-              minHeight: maxHeight || isFullscreen ? undefined : "320px",
-              fontSize:   resolved.cssVars["--ne-font-size"]  || "16px",
-              lineHeight: resolved.cssVars["--ne-line-height"] || "1.75",
-            }}
+            style={{ minHeight: maxHeight || isFullscreen ? undefined : "280px" }}
           >
             <Editable
               renderElement={renderElement}
@@ -331,13 +311,22 @@ const NovaEditor = ({
             />
           </div>
 
-          {/* Footer: word count */}
-          {showWordCount && (
-            <div className="ne-footer" aria-live="polite" id="ne-word-count">
-              <span className="ne-footer-stat">{wordCount} words</span>
-              <span className="ne-footer-stat">{charCount} chars</span>
-              {isFullscreen && (
-                <span className="ne-footer-fullscreen-badge">Fullscreen</span>
+          {showFooter && (
+            <div className="ne-footer" aria-live="polite">
+              {/* Branding — left side */}
+              {branding
+                ? <FooterBranding branding={branding} />
+                : <div />  /* spacer so stats stay right */
+              }
+              {/* Stats — right side */}
+              {showWordCount && (
+                <div className="ne-footer-stats">
+                  <span className="ne-footer-stat">{wordCount} words</span>
+                  <span className="ne-footer-stat">{charCount} chars</span>
+                  {isFullscreen && (
+                    <span className="ne-footer-fullscreen-badge">Fullscreen</span>
+                  )}
+                </div>
               )}
             </div>
           )}
@@ -361,69 +350,41 @@ const Element = ({ attributes, children, element }) => {
     case "bulleted-list": return <ul   style={style} {...attributes}>{children}</ul>
     case "numbered-list": return <ol   style={style} {...attributes}>{children}</ol>
     case "list-item":     return <li   style={style} {...attributes}>{children}</li>
-
     case "check-item":
       return (
-        <div {...attributes} style={{ display: "flex", alignItems: "flex-start", gap: "0.5rem", ...style }}>
-          <input
-            type="checkbox"
-            checked={!!element.checked}
-            readOnly
-            style={{ marginTop: "0.3rem", accentColor: "var(--ne-primary)", flexShrink: 0 }}
-          />
-          <span style={{ textDecoration: element.checked ? "line-through" : "none", opacity: element.checked ? 0.5 : 1 }}>
+        <div {...attributes} style={{ display:"flex", alignItems:"flex-start", gap:"0.5rem", ...style }}>
+          <input type="checkbox" checked={!!element.checked} readOnly
+            style={{ marginTop:"0.3rem", accentColor:"var(--ne-primary)", flexShrink:0 }} />
+          <span style={{ textDecoration: element.checked ? "line-through":"none", opacity: element.checked ? 0.5:1 }}>
             {children}
           </span>
         </div>
       )
-
     case "code-block":
       return (
         <pre {...attributes}>
           <code className={`language-${element.language || "text"}`}>{children}</code>
         </pre>
       )
-
     case "horizontal-rule":
       return (
-        <div {...attributes} contentEditable={false} style={{ userSelect: "none" }}>
-          <hr />
-          {children}
+        <div {...attributes} contentEditable={false} style={{ userSelect:"none" }}>
+          <hr />{children}
         </div>
       )
-
-    // ── Table — correct Slate-native rendering ──────────────────────────────
-    // Each level renders only {children} — Slate calls renderElement recursively
-    // for each child node. Never manually map element.children here.
     case "table":
       return (
         <div className="ne-table-wrapper">
-          <table {...attributes}>
-            {children}
-          </table>
+          <table {...attributes}>{children}</table>
         </div>
       )
-
-    case "table-header":
-      // Renders as <thead><tr> — children are table-cell nodes with header:true
-      return (
-        <thead {...attributes}>
-          <tr>{children}</tr>
-        </thead>
-      )
-
-    case "table-body":
-      return <tbody {...attributes}>{children}</tbody>
-
-    case "table-row":
-      return <tr {...attributes}>{children}</tr>
-
+    case "table-header": return <thead {...attributes}><tr>{children}</tr></thead>
+    case "table-body":   return <tbody {...attributes}>{children}</tbody>
+    case "table-row":    return <tr    {...attributes}>{children}</tr>
     case "table-cell":
-      // The markdown parser sets header:true on cells inside a table-header node
       return element.header
         ? <th {...attributes} style={style}>{children}</th>
         : <td {...attributes} style={style}>{children}</td>
-
     default:
       return <p style={style} {...attributes}>{children}</p>
   }
@@ -440,33 +401,21 @@ const Leaf = ({ attributes, children, leaf }) => {
   return <span {...attributes}>{children}</span>
 }
 
-// ── Slate helpers (exported for Toolbar and external use) ─────────────────────
+// ── Slate helpers ─────────────────────────────────────────────────────────────
 
 export const toggleBlock = (editor, format) => {
-  const isActive = isBlockActive(
-    editor, format,
-    TEXT_ALIGN_TYPES.includes(format) ? "align" : "type"
-  )
-  const isList = LIST_TYPES.includes(format)
-
+  const isActive = isBlockActive(editor, format, TEXT_ALIGN_TYPES.includes(format) ? "align" : "type")
+  const isList   = LIST_TYPES.includes(format)
   Transforms.unwrapNodes(editor, {
-    match: (n) =>
-      !Editor.isEditor(n) &&
-      SlateElement.isElement(n) &&
-      LIST_TYPES.includes(n.type) &&
-      !TEXT_ALIGN_TYPES.includes(format),
+    match: n => !Editor.isEditor(n) && SlateElement.isElement(n) &&
+      LIST_TYPES.includes(n.type) && !TEXT_ALIGN_TYPES.includes(format),
     split: true,
   })
-
   const newProps = TEXT_ALIGN_TYPES.includes(format)
     ? { align: isActive ? undefined : format }
     : { type: isActive ? "paragraph" : isList ? "list-item" : format }
-
   Transforms.setNodes(editor, newProps)
-
-  if (!isActive && isList) {
-    Transforms.wrapNodes(editor, { type: format, children: [] })
-  }
+  if (!isActive && isList) Transforms.wrapNodes(editor, { type: format, children: [] })
 }
 
 export const toggleMark = (editor, format) => {
@@ -479,8 +428,7 @@ export const isBlockActive = (editor, format, blockType = "type") => {
   if (!selection) return false
   const [match] = Array.from(Editor.nodes(editor, {
     at: Editor.unhangRange(editor, selection),
-    match: (n) =>
-      !Editor.isEditor(n) && SlateElement.isElement(n) && n[blockType] === format,
+    match: n => !Editor.isEditor(n) && SlateElement.isElement(n) && n[blockType] === format,
   }))
   return !!match
 }

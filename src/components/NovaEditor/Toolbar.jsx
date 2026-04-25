@@ -1,6 +1,5 @@
 import { useSlate } from "slate-react"
 import { Transforms } from "slate"
-import { useEffect, useRef, useState } from "react"
 import {
   Bold, Italic, Underline, Strikethrough, Code,
   Heading1, Heading2, Heading3, Type,
@@ -33,65 +32,11 @@ const TOOL_META = {
 
 const GROUP_ORDER = ["formatting", "headings", "blocks", "alignment", "actions", "fullscreen"]
 
-// ── Branding component with collapse animation ────────────────────────────────
-
-const BrandingStrip = ({ branding }) => {
-  const [collapsed, setCollapsed] = useState(false)
-  const timerRef = useRef(null)
-
-  const hasLogo = !!branding.logo
-  const hasName = !!branding.name
-
-  // Collapse after 3 seconds if both logo and name are present
-  useEffect(() => {
-    if (!hasLogo || !hasName) return
-    timerRef.current = setTimeout(() => setCollapsed(true), 3000)
-    return () => clearTimeout(timerRef.current)
-  }, [hasLogo, hasName])
-
-  const handleLogoClick = () => {
-    if (!collapsed) return
-    setCollapsed(false)
-    clearTimeout(timerRef.current)
-    timerRef.current = setTimeout(() => setCollapsed(true), 3000)
-  }
-
-  // If only name, only logo — render simply without animation
-  if (!hasLogo || !hasName) {
-    return (
-      <div className="ne-brand">
-        {hasLogo && <img src={branding.logo} alt={branding.name || "Brand logo"} />}
-        {hasName && <span className="ne-brand-name">{branding.name}</span>}
-      </div>
-    )
-  }
-
-  // Both present — animated version
-  return (
-    <div className={`ne-brand${collapsed ? " collapsed" : ""}`}>
-      <div
-        className="ne-brand-logo-wrap"
-        onClick={handleLogoClick}
-        title={collapsed ? branding.name : undefined}
-      >
-        <img src={branding.logo} alt={branding.name} />
-        {collapsed && (
-          <span className="ne-brand-logo-tooltip">{branding.name}</span>
-        )}
-      </div>
-      <span className="ne-brand-name">{branding.name}</span>
-    </div>
-  )
-}
-
-// ── Toolbar ───────────────────────────────────────────────────────────────────
-
 const Toolbar = ({
-  toolbarConfig = {},
-  isFullscreen  = false,
-  compact       = false,
+  toolbarConfig    = {},
+  isFullscreen     = false,
+  compact          = false,
   onToggleFullscreen,
-  branding,
 }) => {
   const editor = useSlate()
 
@@ -114,7 +59,7 @@ const Toolbar = ({
       case "block": toggleBlock(editor, toolKey); break
       case "align": toggleBlock(editor, toolKey); break
       case "action":
-        if (meta.actionKey === "paragraph")      toggleBlock(editor, "paragraph")
+        if (meta.actionKey === "paragraph") toggleBlock(editor, "paragraph")
         if (meta.actionKey === "horizontal-rule")
           Transforms.insertNodes(editor, { type: "horizontal-rule", children: [{ text: "" }] })
         break
@@ -140,7 +85,7 @@ const Toolbar = ({
     if (groupName === "fullscreen") {
       if (!tools.includes("fullscreen")) return null
       return (
-        <div className="ne-toolbar-group" style={!branding ? { marginLeft: "auto" } : undefined}>
+        <div className="ne-toolbar-group">
           <Btn
             onMouseDown={e => { e.preventDefault(); onToggleFullscreen?.() }}
             title={isFullscreen ? "Exit Fullscreen" : "Fullscreen"}
@@ -174,20 +119,25 @@ const Toolbar = ({
     const el = renderGroup(groupName)
     if (!el) return
     if (renderedGroups.length > 0) {
-      renderedGroups.push(<div key={`sep-${groupName}`} className="ne-toolbar-sep" aria-hidden="true" />)
+      renderedGroups.push(
+        <div key={`sep-${groupName}`} className="ne-toolbar-sep" aria-hidden="true" />
+      )
     }
     renderedGroups.push(<div key={groupName}>{el}</div>)
   })
 
   return (
-    <div className={`ne-toolbar${compact ? " compact" : ""}`} role="toolbar" aria-label="Text formatting toolbar">
+    <div
+      className={`ne-toolbar${compact ? " compact" : ""}`}
+      role="toolbar"
+      aria-label="Text formatting toolbar"
+    >
       {renderedGroups}
-      {branding && <BrandingStrip branding={branding} />}
     </div>
   )
 }
 
-const Btn = ({ active = false, title, shortcut, children, ...props }) => {
+export const Btn = ({ active = false, title, shortcut, children, ...props }) => {
   const label = shortcut ? `${title} (${shortcut})` : title
   return (
     <button type="button" className={`ne-btn${active ? " active" : ""}`}
