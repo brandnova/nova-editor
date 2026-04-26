@@ -49,7 +49,7 @@ export default function App() {
               {pgDark ? "☀ Light" : "☾ Dark"}
             </button>
             <span style={{ ...pg.badge, background: p.inputBg, border:`1px solid ${p.border}`, color: p.muted }}>
-              v2.1.0
+              v2.2.0
             </span>
           </div>
         </div>

@@ -16,7 +16,7 @@ export const TOOLBAR_PRESETS = {
   },
 
   standard: {
-    formatting: ["bold", "italic", "underline", "strikethrough"],
+    formatting: ["bold", "italic", "underline", "strikethrough", "clearFormatting"],
     headings:   ["heading-one", "heading-two", "heading-three", "paragraph"],
     blocks:     ["bulleted-list", "numbered-list", "block-quote"],
     alignment:  [],
@@ -25,7 +25,13 @@ export const TOOLBAR_PRESETS = {
   },
 
   full: {
-    formatting: ["bold", "italic", "underline", "strikethrough", "code"],
+    formatting: [
+      "bold", "italic", "underline", "strikethrough", "code",
+      "subscript", "superscript",
+      "fontFamily", "fontSize",
+      "textColor", "bgColor",
+      "clearFormatting",
+    ],
     headings:   ["heading-one", "heading-two", "heading-three", "paragraph"],
     blocks:     ["bulleted-list", "numbered-list", "block-quote", "code-block", "horizontal-rule"],
     alignment:  ["left", "center", "right", "justify"],

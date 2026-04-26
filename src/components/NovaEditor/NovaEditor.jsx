@@ -15,6 +15,8 @@ const HOTKEYS = {
   "mod+u":       "underline",
   "mod+`":       "code",
   "mod+shift+s": "strikethrough",
+  "mod+,":       "subscript",
+  "mod+.":       "superscript",
   "mod+z":       "undo",
   "mod+shift+z": "redo",
   "mod+y":       "redo",
@@ -147,26 +149,21 @@ const NovaEditor = ({
     return e
   }, [])
 
-  // ── Fullscreen ─────────────────────────────────────────────────────────────
+  // ── Custom fullscreen (CSS-based, no native API) ───────────────────────────
+  // Using native requestFullscreen() breaks portals and theme var inheritance.
+  // CSS fullscreen gives us full control over z-index, layout, and theming.
 
-  const toggleFullscreen = useCallback(async () => {
-    if (!rootRef.current) return
-    try {
-      if (!document.fullscreenElement) {
-        await rootRef.current.requestFullscreen()
-      } else {
-        await document.exitFullscreen()
-      }
-    } catch {
-      setIsFullscreen(v => !v)
-    }
+  const toggleFullscreen = useCallback(() => {
+    setIsFullscreen(v => !v)
   }, [])
 
+  // Allow Escape to exit fullscreen (normally handled by browser for native FS)
   useEffect(() => {
-    const handler = () => setIsFullscreen(!!document.fullscreenElement)
-    document.addEventListener("fullscreenchange", handler)
-    return () => document.removeEventListener("fullscreenchange", handler)
-  }, [])
+    if (!isFullscreen) return
+    const handler = (e) => { if (e.key === "Escape") setIsFullscreen(false) }
+    document.addEventListener("keydown", handler)
+    return () => document.removeEventListener("keydown", handler)
+  }, [isFullscreen])
 
   // ── Renderers ──────────────────────────────────────────────────────────────
 
@@ -261,13 +258,17 @@ const NovaEditor = ({
   const rootClass = [
     "ne-root",
     useStickyClass  ? "ne-sticky-toolbar"  : "",
-    isFullscreen    ? "ne-fullscreen-wrap" : "",
+    isFullscreen    ? "ne-is-fullscreen"   : "",  // ← was "ne-fullscreen-wrap"
     className,
   ].filter(Boolean).join(" ")
 
-  const containerClass = ["ne-container", maxHeight ? "has-max-height" : ""].filter(Boolean).join(" ")
+  const containerClass = [
+    "ne-container",
+    maxHeight ? "has-max-height" : "",
+  ].filter(Boolean).join(" ")
+
   const containerStyle = isFullscreen
-    ? { height: "100%", maxHeight: "100%" }
+    ? {}  // fullscreen is handled by CSS on .ne-is-fullscreen, not inline style
     : maxHeight
       ? { height: `${maxHeight}px`, maxHeight: `${maxHeight}px` }
       : {}
@@ -393,12 +394,34 @@ const Element = ({ attributes, children, element }) => {
 // ── Leaf renderer ─────────────────────────────────────────────────────────────
 
 const Leaf = ({ attributes, children, leaf }) => {
+  const style = {}
+
+  if (leaf.color)           style.color           = leaf.color
+  if (leaf.backgroundColor) style.backgroundColor = leaf.backgroundColor
+  if (leaf.fontFamily)      style.fontFamily      = leaf.fontFamily
+  if (leaf.fontSize)        style.fontSize        = leaf.fontSize
+
+  // Subscript and superscript: only apply one, superscript takes precedence
+  // if somehow both exist (defensive — toggleMark prevents this)
+  if (leaf.superscript && !leaf.subscript) {
+    style.verticalAlign = "super"
+    style.fontSize      = leaf.fontSize || "0.75em"
+  } else if (leaf.subscript && !leaf.superscript) {
+    style.verticalAlign = "sub"
+    style.fontSize      = leaf.fontSize || "0.75em"
+  }
+
   if (leaf.bold)          children = <strong>{children}</strong>
   if (leaf.italic)        children = <em>{children}</em>
   if (leaf.underline)     children = <u>{children}</u>
   if (leaf.strikethrough) children = <del>{children}</del>
   if (leaf.code)          children = <code>{children}</code>
-  return <span {...attributes}>{children}</span>
+
+  return (
+    <span {...attributes} style={Object.keys(style).length ? style : undefined}>
+      {children}
+    </span>
+  )
 }
 
 // ── Slate helpers ─────────────────────────────────────────────────────────────
@@ -419,6 +442,14 @@ export const toggleBlock = (editor, format) => {
 }
 
 export const toggleMark = (editor, format) => {
+  // Subscript and superscript are mutually exclusive
+  if (format === "subscript" && isMarkActive(editor, "superscript")) {
+    Editor.removeMark(editor, "superscript")
+  }
+  if (format === "superscript" && isMarkActive(editor, "subscript")) {
+    Editor.removeMark(editor, "subscript")
+  }
+
   if (isMarkActive(editor, format)) Editor.removeMark(editor, format)
   else                               Editor.addMark(editor, format, true)
 }

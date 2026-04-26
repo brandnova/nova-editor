@@ -376,3 +376,448 @@
   transition-property: background-color, border-color, color, box-shadow;
   transition-duration: 200ms; transition-timing-function: ease;
 }
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   Toolbar layout — v2.2.0
+───────────────────────────────────────────────────────────────────────────── */
+
+.ne-toolbar {
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 0.25rem;
+  min-height: calc(var(--ne-toolbar-size) + 0.75rem);
+  position: relative;
+}
+
+.ne-toolbar.compact {
+  padding: 0.25rem 0.5rem;
+  min-height: calc(var(--ne-toolbar-size) + 0.5rem);
+}
+
+/* Collapsible section — contains group trigger buttons */
+.ne-toolbar-collapsible {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  flex: 1;
+  min-width: 0;
+  flex-wrap: nowrap;
+}
+
+/* Right cluster — undo/redo/fullscreen/settings */
+.ne-toolbar-cluster {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  flex-shrink: 0;
+  margin-left: auto;
+  padding-left: 0.25rem;
+}
+
+/* Two-row mode — cluster wraps to its own row when space runs out */
+.ne-toolbar--two-row {
+  flex-wrap: wrap;
+  align-items: flex-start;
+}
+
+.ne-toolbar--two-row .ne-toolbar-collapsible {
+  width: 100%;
+  order: 1;
+}
+
+.ne-toolbar--two-row .ne-toolbar-cluster {
+  width: 100%;
+  order: 2;
+  justify-content: flex-end;
+  margin-left: 0;
+  padding-left: 0;
+  padding-top: 0.25rem;
+  border-top: var(--ne-border-width) solid var(--ne-border);
+}
+
+/* ── Group trigger buttons ── */
+
+.ne-group-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.15rem;
+  width: auto;
+  min-width: var(--ne-toolbar-size);
+  padding: 0 0.4rem;
+  height: var(--ne-toolbar-size);
+  border: none;
+  background: transparent;
+  color: var(--ne-text-muted);
+  border-radius: var(--ne-radius-btn);
+  cursor: pointer;
+  position: relative;
+  transition: background 0.15s, color 0.15s;
+  flex-shrink: 0;
+  font-family: var(--ne-font);
+}
+
+.ne-group-trigger:hover {
+  background: var(--ne-hover);
+  color: var(--ne-primary);
+}
+
+.ne-group-trigger.active {
+  color: var(--ne-active-text);
+}
+
+.ne-group-trigger.open {
+  background: var(--ne-active-bg);
+  color: var(--ne-active-text);
+}
+
+.ne-group-trigger:focus-visible {
+  outline: 2px solid var(--ne-primary);
+  outline-offset: 1px;
+}
+
+/* Chevron icon inside the trigger */
+.ne-group-trigger-chevron {
+  width: 0.6em !important;
+  height: 0.6em !important;
+  opacity: 0.6;
+  transition: transform 0.2s ease;
+  flex-shrink: 0;
+}
+
+.ne-group-trigger.open .ne-group-trigger-chevron {
+  transform: rotate(180deg);
+}
+
+/* Active dot */
+.ne-group-trigger-dot {
+  position: absolute;
+  bottom: 3px;
+  right: 3px;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--ne-primary);
+  pointer-events: none;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   Sub-toolbar — slides down below the main toolbar row
+───────────────────────────────────────────────────────────────────────────── */
+
+.ne-sub-toolbar {
+  max-height: 0;
+  /* Use clip instead of overflow:hidden so absolutely positioned children
+     (colour picker panel) can escape when the sub-toolbar is open */
+  overflow: hidden;
+  background: var(--ne-toolbar-bg);
+  border-bottom: 0px solid var(--ne-border);
+  transition:
+    max-height 0.22s cubic-bezier(0.4, 0, 0.2, 1),
+    border-bottom-width 0.22s,
+    padding 0.22s;
+  padding: 0 0.625rem;
+}
+
+.ne-sub-toolbar--open {
+  max-height: 400px; /* increased to accommodate colour picker panel */
+  overflow: visible;  /* allow colour panel to escape the sub-toolbar bounds */
+  border-bottom-width: var(--ne-border-width);
+  padding: 0.375rem 0.625rem;
+}
+
+.ne-sub-toolbar-inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.125rem 0;
+}
+
+/* Sub-toolbar inherits button styles from .ne-btn — no extra rules needed */
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   Custom fullscreen — CSS-based (replaces native requestFullscreen)
+   No portal issues, no theme var inheritance issues, no z-index fights.
+───────────────────────────────────────────────────────────────────────────── */
+
+.ne-is-fullscreen {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 9999 !important;
+  display: flex;
+  flex-direction: column;
+  background: var(--ne-bg);
+}
+
+.ne-is-fullscreen .ne-container {
+  flex: 1;
+  border-radius: 0;
+  border: none;
+  box-shadow: none;
+  height: 100%;
+  max-height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.ne-is-fullscreen .ne-toolbar {
+  border-radius: 0;
+  /* No sticky needed — toolbar is already at the top of the fixed container */
+  position: relative !important;
+  top: auto !important;
+}
+
+.ne-is-fullscreen .ne-content {
+  flex: 1;
+  overflow-y: auto;
+  border-radius: 0;
+}
+
+.ne-is-fullscreen .ne-footer {
+  border-radius: 0;
+}
+
+/* Sub-toolbar inside fullscreen — inherits all vars correctly */
+.ne-is-fullscreen .ne-sub-toolbar--open {
+  border-radius: 0;
+}
+
+/* Body scroll lock when fullscreen is active */
+body:has(.ne-is-fullscreen) {
+  overflow: hidden;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   Font selects — in sub-toolbar
+───────────────────────────────────────────────────────────────────────────── */
+
+.ne-font-select-wrap {
+  display: inline-flex;
+  align-items: center;
+  position: relative;
+}
+
+.ne-font-select {
+  appearance: none;
+  -webkit-appearance: none;
+  background: var(--ne-hover);
+  border: var(--ne-border-width) solid var(--ne-border);
+  border-radius: var(--ne-radius-btn);
+  color: var(--ne-text);
+  font-family: var(--ne-font);
+  font-size: 0.75rem;
+  height: var(--ne-toolbar-size);
+  padding: 0 1.5rem 0 0.5rem;
+  cursor: pointer;
+  outline: none;
+  min-width: 120px;
+  max-width: 160px;
+  transition: border-color 0.15s, background 0.15s;
+  /* Custom chevron via background image — theme-neutral SVG */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%239ca3af' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.4rem center;
+}
+
+/* Native <option> elements don't inherit CSS vars in all browsers.
+   Force light-on-dark / dark-on-light explicitly. */
+.ne-font-select option {
+  background: var(--ne-toolbar-bg);
+  color: var(--ne-text);
+}
+
+/* Chromium on system-dark applies a white background to option elements.
+   This overrides it with the theme surface colour. */
+@media (prefers-color-scheme: dark) {
+  .ne-font-select option {
+    background: #1a1a1a;
+    color: #e5e5e5;
+  }
+}
+
+.ne-font-select:hover  { border-color: var(--ne-primary); }
+.ne-font-select:focus  { border-color: var(--ne-primary); outline: none; }
+
+.ne-font-select--size  { min-width: 64px; max-width: 72px; }
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   Colour picker — trigger + inline panel
+───────────────────────────────────────────────────────────────────────────── */
+
+.ne-colour-picker-wrap {
+  position: relative;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+/* Trigger button */
+.ne-colour-trigger {
+  width: auto !important;
+  min-width: var(--ne-toolbar-size);
+  padding: 0 0.3rem !important;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+}
+
+.ne-colour-trigger-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  pointer-events: none;
+}
+
+.ne-colour-trigger-inner svg {
+  width: var(--ne-icon-size);
+  height: var(--ne-icon-size);
+}
+
+/* Colour indicator bar below the icon */
+.ne-colour-trigger-swatch {
+  display: block;
+  width: 1rem;
+  height: 3px;
+  border-radius: 2px;
+  border: 1px solid;
+  transition: background 0.15s;
+}
+
+/* Inline panel */
+.ne-colour-panel {
+  position: absolute;
+  /* Open downward — away from the main toolbar above */
+  top: calc(100% + 6px);
+  left: 0;
+  /* High z-index to clear the main toolbar (which is sticky at z-index:20) */
+  z-index: 500;
+  background: var(--ne-toolbar-bg);
+  border: var(--ne-border-width) solid var(--ne-border);
+  border-radius: var(--ne-radius);
+  box-shadow: var(--ne-shadow), 0 8px 24px rgba(0,0,0,0.2);
+  padding: 0.5rem;
+  min-width: 210px;
+  animation: ne-dropdown-in 0.12s ease forwards;
+}
+
+/* Flip panel to the right edge when the picker is near the right side */
+.ne-colour-picker-wrap--open:last-child .ne-colour-panel,
+.ne-colour-picker-wrap--open:nth-last-child(2) .ne-colour-panel {
+  left: auto;
+  right: 0;
+}
+
+/* Swatch grid */
+.ne-colour-grid {
+  display: grid;
+  grid-template-columns: repeat(8, 1.375rem);
+  gap: 2px;
+  margin-bottom: 0.5rem;
+}
+
+.ne-colour-swatch {
+  width: 1.375rem;
+  height: 1.375rem;
+  border-radius: 2px;
+  border: 1px solid rgba(0,0,0,0.15);
+  cursor: pointer;
+  transition: transform 0.1s, box-shadow 0.1s;
+  padding: 0;
+}
+
+.ne-colour-swatch:hover {
+  transform: scale(1.15);
+  box-shadow: 0 0 0 2px var(--ne-primary);
+  z-index: 1;
+}
+
+.ne-colour-swatch--active {
+  box-shadow: 0 0 0 2px var(--ne-primary), 0 0 0 4px var(--ne-bg);
+}
+
+/* Clear swatch */
+.ne-colour-swatch--clear {
+  background: var(--ne-bg) !important;
+  border: 1px solid var(--ne-border) !important;
+  position: relative;
+  overflow: hidden;
+}
+
+.ne-colour-swatch-clear-line {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to top right,
+    transparent calc(50% - 1px),
+    #ef4444 calc(50% - 1px),
+    #ef4444 calc(50% + 1px),
+    transparent calc(50% + 1px)
+  );
+}
+
+/* Hex input row */
+.ne-colour-hex-row {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  border-top: var(--ne-border-width) solid var(--ne-border);
+  padding-top: 0.375rem;
+}
+
+.ne-colour-hex-preview {
+  width: 1.25rem;
+  height: 1.25rem;
+  border-radius: 3px;
+  border: 1px solid var(--ne-border);
+  flex-shrink: 0;
+}
+
+.ne-colour-hex-input {
+  flex: 1;
+  min-width: 0;
+  background: var(--ne-hover);
+  border: var(--ne-border-width) solid var(--ne-border);
+  border-radius: var(--ne-radius-btn);
+  color: var(--ne-text);
+  font-family: var(--ne-mono-font);
+  font-size: 0.7rem;
+  padding: 0.2rem 0.375rem;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.ne-colour-hex-input:focus {
+  border-color: var(--ne-primary);
+}
+
+.ne-colour-hex-apply {
+  background: var(--ne-hover);
+  border: var(--ne-border-width) solid var(--ne-border);
+  border-radius: var(--ne-radius-btn);
+  color: var(--ne-text-muted);
+  font-size: 0.8rem;
+  width: 1.5rem;
+  height: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.15s, color 0.15s;
+}
+
+.ne-colour-hex-apply:hover {
+  background: var(--ne-primary);
+  color: var(--ne-primary-fg);
+  border-color: var(--ne-primary);
+}
+
+/* Dropdown entrance animation — shared with sub-toolbar panel */
+@keyframes ne-dropdown-in {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}

@@ -8,11 +8,28 @@ const serializeNode = (node) => {
       .replace(/&/g, "&amp;")
       .replace(/</g, "&lt;")
       .replace(/>/g, "&gt;")
+
+    // Build inline style string for value-based marks
+    const styles = []
+    if (node.color)           styles.push(`color:${node.color}`)
+    if (node.backgroundColor) styles.push(`background-color:${node.backgroundColor}`)
+    if (node.fontFamily)      styles.push(`font-family:${node.fontFamily}`)
+    if (node.fontSize)        styles.push(`font-size:${node.fontSize}`)
+    if (node.superscript)     styles.push("vertical-align:super;font-size:0.75em")
+    if (node.subscript)       styles.push("vertical-align:sub;font-size:0.75em")
+
+    // Apply structural marks
+    if (node.code)          t = `<code>${t}</code>`
     if (node.bold)          t = `<strong>${t}</strong>`
     if (node.italic)        t = `<em>${t}</em>`
     if (node.underline)     t = `<u>${t}</u>`
     if (node.strikethrough) t = `<del>${t}</del>`
-    if (node.code)          t = `<code>${t}</code>`
+
+    // Wrap in a span if any style marks are present
+    if (styles.length > 0) {
+      t = `<span style="${styles.join(";")}">${t}</span>`
+    }
+
     return t
   }
 
