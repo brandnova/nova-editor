@@ -1,7 +1,7 @@
 # Nova Editor
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-amber.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/version-2.0.0-blue.svg)](https://github.com/brandnova/nova-editor/releases)
+[![Version](https://img.shields.io/badge/version-2.4.0-blue.svg)](https://github.com/brandnova/nova-editor/releases)
 [![Built with React](https://img.shields.io/badge/built%20with-React%2018-61dafb.svg?logo=react)](https://react.dev)
 [![Slate.js](https://img.shields.io/badge/editor-Slate.js-black.svg)](https://slatejs.org)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
@@ -14,39 +14,56 @@ Drop-in ready for Django templates, plain HTML, PHP, or any project that can inc
 
 ## Features
 
-- **Amber-first design system** with four built-in themes: `valiux`, `clean`, `utility`, `soft`
-- **Three toolbar presets**: `minimal`, `standard`, `full`, or build a custom config
-- **Full UI configurability**: border radius, toolbar size, compact mode, glassmorphism, fonts, shadows
-- **Light / Dark / System** color mode support
-- **Markdown paste**: paste raw Markdown and it converts automatically, headings, lists, tables, code blocks, checklists, bold/italic/strikethrough
-- **HTML ↔ Slate serialisation**: outputs clean HTML; accepts HTML as initial content
-- **Hidden input sync**: wire directly to a `<textarea>` or `<input>` for form submission (Django-friendly)
-- **Branding strip**: optional logo + name in the toolbar
-- **Fullscreen mode**: native Fullscreen API with CSS fallback
-- **Auto-reset headings**: pressing Enter in a heading returns to a paragraph
-- **Sticky toolbar**: stays visible as the page scrolls
-- **Max height + scrollable content**: cap the editor height and let content scroll internally
-- **Accessible**: keyboard navigation, ARIA roles, focus rings
-- **Standalone build**: one JS + one CSS file, usable without React
+- **Neutral base theme** with paired light/dark named presets — `base`, `valiux`, `notion`, `midnight`, `forest`, `aurora`, `newsprint`, `social`, `terminal`
+- **Three toolbar presets**: `minimal`, `standard`, `full` — or build a custom config
+- **Responsive single-row toolbar** — all tool groups are trigger buttons that open slide-down sub-toolbars. No overflow, no wrapping, no JavaScript measurement
+- **Full UI configurability** — border radius, toolbar size, compact mode, fonts, shadows, all surface colours
+- **Light / Dark / System** color mode baked into named themes
+- **Markdown paste** — headings, lists, tables, code blocks, checklists, bold/italic/strikethrough
+- **HTML ↔ Slate serialisation** — outputs clean indented HTML; accepts HTML as initial content
+- **Rich formatting tools** — Bold, Italic, Underline, Strikethrough, Inline Code, Subscript, Superscript, Clear Formatting
+- **Typography tools** — Font Family selector, Font Size selector (10px–64px)
+- **Colour tools** — Text Colour and Highlight Colour with 48-swatch palette + hex input
+- **Link insertion** — href, display text, and new-tab toggle via popover
+- **Image insertion** — URL-based with alt text
+- **Special characters** — categorised grid of symbols
+- **Emoji picker** — categorised with search
+- **Hidden input sync** — wire directly to a `<textarea>` or `<input>` for form submission
+- **Footer branding** — optional logo + name with click-to-collapse animation
+- **Fullscreen mode** — CSS-based, no native API, works in all contexts
+- **Sticky toolbar** — stays visible on scroll; sub-toolbars stick with it
+- **Max height + internal scroll** — cap editor height with styled scrollbar
+- **Accessible** — keyboard navigation, ARIA roles, focus rings, shortcut labels
+- **Standalone build** — one JS + one CSS file, no React required on the page
 
 ---
 
 ## Presets
 
 ### UI Themes (`uiConfig.preset`)
-| Name       | Appearance                              |
-|------------|-----------------------------------------|
-| `valiux`   | Amber on deep dark, glassmorphism       |
-| `clean`    | Light, minimal amber accents            |
-| `utility`  | No radius, compact, system font         |
-| `soft`     | Generous radius, pill buttons, light    |
+| Name              | Mode  | Appearance                                    |
+|-------------------|-------|-----------------------------------------------|
+| `base-light`      | Light | Neutral, no colour personality                |
+| `base-dark`       | Dark  | Neutral dark                                  |
+| `valiux-dark`     | Dark  | Amber on deep dark (Brand Nova identity)      |
+| `valiux-light`    | Light | Amber light variant                           |
+| `notion-light`    | Light | Blue accent, document-first, system font      |
+| `notion-dark`     | Dark  | Blue accent dark                              |
+| `midnight-dark`   | Dark  | Indigo accent, Linear/Vercel-inspired         |
+| `midnight-light`  | Light | Indigo light variant                          |
+| `forest-light`    | Light | Green accent, serif font, writing-focused     |
+| `forest-dark`     | Dark  | Green accent dark                             |
+| `aurora-dark`     | Dark  | Teal accent, design-tool-inspired             |
+| `newsprint-light` | Light | Red accent, editorial serif, square corners   |
+| `social-light`    | Light | Blue accent, rounded, composer-inspired       |
+| `terminal-dark`   | Dark  | Phosphor green, monospace everything          |
 
 ### Toolbar Presets (`preset` prop)
-| Name       | Tools included                                                             |
-|------------|----------------------------------------------------------------------------|
-| `minimal`  | Bold, Italic, Underline, H1, Paragraph, Undo/Redo, Fullscreen              |
-| `standard` | + Strikethrough, H2, H3, Bullet list, Numbered list, Blockquote            |
-| `full`     | + Inline code, Code block, Divider, All alignments, Checklist support      |
+| Name       | Groups included                                                      |
+|------------|----------------------------------------------------------------------|
+| `minimal`  | Formatting (Bold/Italic/Underline), Headings (H1/¶), Actions        |
+| `standard` | + Strikethrough, Clear, H2/H3, Lists, Blockquote                    |
+| `full`     | All groups including Alignment, Blocks, Insert (link/image/emoji)   |
 
 ---
 
@@ -77,16 +94,16 @@ Quick example for plain HTML:
   id="my-editor"
   data-nova-editor
   data-toolbar="full"
-  data-color-mode="dark"
+  data-ui-preset="notion-light"
   data-placeholder="Start writing…"
 ></div>
 
 <!-- 3. Read the output -->
 <script>
   const editor = NovaEditor.init({
-    elementId:   "my-editor",
-    toolbar:     "full",
-    colorMode:   "dark",
+    elementId:    "my-editor",
+    toolbar:      "full",
+    uiPreset:     "notion-light",
     onHTMLChange: (html) => console.log(html),
   })
 </script>
@@ -99,28 +116,29 @@ Quick example for plain HTML:
 ```
 src/
 ├── components/NovaEditor/
-│   ├── NovaEditor.jsx     # Main editor component
-│   ├── Toolbar.jsx        # Toolbar (buttons, groups, branding)
-│   ├── serializers.js     # HTML ↔ Slate conversion
-│   ├── markdown.js        # Markdown paste parser
-│   └── index.js           # Re-exports
-├── assets/
-│   └── logo.png           # Brand logo (used in branding strip)
-├── theme-config.js        # Theme system + CSS variable resolver
-├── presets.js             # Toolbar preset definitions
-├── App.jsx                # Dev playground
-├── standalone.js          # window.NovaEditor bundle entry
-├── main.jsx               # React dev entry
-└── index.css              # All editor styles
+│   ├── NovaEditor.jsx       # Main editor — state, hotkeys, renderers
+│   ├── Toolbar.jsx          # All group trigger buttons + sub-toolbar wiring
+│   ├── SubToolbar.jsx       # Slide-down sub-toolbar panel component
+│   ├── useToolbarCollapse.js # Toolbar ref (simplified — no measurement needed)
+│   ├── serializers.js       # HTML ↔ Slate + pretty-printer
+│   ├── markdown.js          # Markdown paste parser
+│   ├── index.js             # Re-exports
+│   └── tools/
+│       ├── ColourPicker.jsx    # Reusable colour picker with palette + hex input
+│       ├── FontFamilySelect.jsx
+│       ├── FontSizeSelect.jsx
+│       ├── LinkTool.jsx        # Link insertion popover
+│       ├── ImageTool.jsx       # Image URL insertion
+│       ├── SpecialChars.jsx    # Special characters grid
+│       └── EmojiPicker.jsx     # Emoji picker with search
+├── theme-config.js          # Named themes + CSS variable resolver
+├── presets.js               # Toolbar preset definitions
+├── standalone.js            # window.NovaEditor bundle entry
+├── App.jsx                  # Dev playground
+└── index.css                # All editor styles
 
 public/
-├── index.html             # Standalone demo / GitHub Pages landing
-└── logo.png               # Logo for standalone build
-
-dist-standalone/           # Generated by build:standalone
-├── nova-editor.umd.js
-├── nova-editor.css
-├── index.html
+├── index.html               # Standalone demo / GitHub Pages landing
 └── logo.png
 ```
 

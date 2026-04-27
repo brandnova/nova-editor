@@ -135,7 +135,10 @@ const NovaEditor = ({
     const e = withHistory(withReact(createEditor()))
     const { isVoid, normalizeNode } = e
 
-    e.isVoid = (el) => el.type === "horizontal-rule" ? true : isVoid(el)
+    e.isVoid = (el) =>
+      el.type === "horizontal-rule" || el.type === "image"
+        ? true
+        : isVoid(el)
 
     e.normalizeNode = ([node, path]) => {
       if (SlateElement.isElement(node) && node.type === "table-cell") {
@@ -344,6 +347,35 @@ const Element = ({ attributes, children, element }) => {
   const style = element.align ? { textAlign: element.align } : {}
 
   switch (element.type) {
+    case "link":
+      return (
+        <a
+          {...attributes}
+          href={element.href}
+          target={element.target || "_self"}
+          rel={element.target === "_blank" ? "noopener noreferrer" : undefined}
+          style={{ color: "var(--ne-primary)", textDecoration: "underline", cursor: "pointer" }}
+        >
+          {children}
+        </a>
+      )
+    case "image":
+      return (
+        <div {...attributes} contentEditable={false} style={{ userSelect: "none", margin: "0.75rem 0" }}>
+          <img
+            src={element.src}
+            alt={element.alt || ""}
+            style={{
+              maxWidth:     "100%",
+              height:       "auto",
+              borderRadius: "clamp(2px, var(--ne-radius-btn), 8px)",
+              display:      "block",
+            }}
+            onError={e => { e.target.style.opacity = "0.3" }}
+          />
+          {children}
+        </div>
+      )
     case "heading-one":   return <h1   style={style} {...attributes}>{children}</h1>
     case "heading-two":   return <h2   style={style} {...attributes}>{children}</h2>
     case "heading-three": return <h3   style={style} {...attributes}>{children}</h3>
@@ -379,7 +411,7 @@ const Element = ({ attributes, children, element }) => {
           <table {...attributes}>{children}</table>
         </div>
       )
-    case "table-header": return <thead {...attributes}><tr>{children}</tr></thead>
+    case "table-header": return <thead {...attributes}>{children}</thead>
     case "table-body":   return <tbody {...attributes}>{children}</tbody>
     case "table-row":    return <tr    {...attributes}>{children}</tr>
     case "table-cell":

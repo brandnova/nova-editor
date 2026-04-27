@@ -11,6 +11,7 @@ export const TOOLBAR_PRESETS = {
     headings:   ["heading-one", "paragraph"],
     blocks:     [],
     alignment:  [],
+    insert:     [],
     actions:    ["undo", "redo"],
     fullscreen: ["fullscreen"],
   },
@@ -20,6 +21,7 @@ export const TOOLBAR_PRESETS = {
     headings:   ["heading-one", "heading-two", "heading-three", "paragraph"],
     blocks:     ["bulleted-list", "numbered-list", "block-quote"],
     alignment:  [],
+    insert:     ["link", "image"],
     actions:    ["undo", "redo"],
     fullscreen: ["fullscreen"],
   },
@@ -35,12 +37,12 @@ export const TOOLBAR_PRESETS = {
     headings:   ["heading-one", "heading-two", "heading-three", "paragraph"],
     blocks:     ["bulleted-list", "numbered-list", "block-quote", "code-block", "horizontal-rule"],
     alignment:  ["left", "center", "right", "justify"],
+    insert:     ["link", "image", "specialChars", "emoji"],
     actions:    ["undo", "redo"],
     fullscreen: ["fullscreen"],
   },
 }
 
-/** Resolve a preset name or custom config into a toolbarConfig object */
 export function resolveToolbarConfig(preset = "full", customConfig = null) {
   if (customConfig) return customConfig
   return TOOLBAR_PRESETS[preset] || TOOLBAR_PRESETS.full

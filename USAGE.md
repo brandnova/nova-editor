@@ -39,24 +39,23 @@ The simplest approach. Add a `div` with `data-nova-editor` and the editor mounts
 
 ### All supported data attributes
 
-| Attribute              | Values                             | Default            | Description                                       |
-|------------------------|------------------------------------|--------------------|---------------------------------------------------|
-| `data-nova-editor`     | (presence flag)                    | —                  | Triggers auto-init                                |
-| `data-ui-preset`       | `valiux` `clean` `utility` `soft`  | `valiux`           | Visual theme                                      |
-| `data-toolbar`         | `minimal` `standard` `full`        | `full`             | Which toolbar buttons to show                     |
-| `data-color-mode`      | `light` `dark` `system`            | `dark`             | Color scheme                                      |
-| `data-glass`           | `true` `false`                     | `true`             | Glassmorphism effect                              |
+| Attribute              | Values                              | Default            | Description                                       |
+|------------------------|-------------------------------------|--------------------|---------------------------------------------------|
+| `data-nova-editor`     | (presence flag)                     | —                  | Triggers auto-init on DOMContentLoaded            |
+| `data-ui-preset`       | any named theme (see README)        | `valiux-dark`      | Visual theme                                      |
+| `data-toolbar`         | `minimal` `standard` `full`        | `full`             | Which toolbar groups to show                      |
+| `data-color-mode`      | `light` `dark` `system`            | (from theme)       | Override theme's color mode                       |
 | `data-compact`         | `true` `false`                     | `false`            | Tighter toolbar padding                           |
-| `data-placeholder`     | any string                         | `"Start writing…"` | Placeholder text                                  |
-| `data-show-word-count` | `true` `false`                     | `true`             | Show word/character count                         |
+| `data-placeholder`     | any string                          | `"Start writing…"` | Placeholder text                                  |
+| `data-show-word-count` | `true` `false`                     | `true`             | Show word/character count footer                  |
 | `data-sticky-toolbar`  | `true` `false`                     | `true`             | Toolbar sticks to top on scroll                   |
-| `data-max-height`      | number (px)                        | —                  | Cap editor height; content scrolls                |
+| `data-max-height`      | number (px)                         | —                  | Cap editor height; content scrolls internally     |
 | `data-auto-focus`      | `true` `false`                     | `false`            | Focus editor on mount                             |
-| `data-output-format`   | `html` `slate`                     | `html`             | Output format for the `onChange` callback         |
-| `data-hidden-input`    | element id                         | —                  | ID of `<input>` or `<textarea>` to sync HTML into |
-| `data-branding-name`   | any string                         | —                  | Brand name shown in toolbar                       |
-| `data-branding-logo`   | URL                                | —                  | Logo URL shown in toolbar                         |
-| `data-ui-config`       | JSON string                        | —                  | Full `uiConfig` override (see section 4)          |
+| `data-output-format`   | `html` `slate`                     | `html`             | Output format passed to `onHTMLChange`            |
+| `data-hidden-input`    | element id                          | —                  | ID of `<input>` or `<textarea>` to sync HTML into |
+| `data-branding-name`   | any string                          | —                  | Brand name shown in footer branding strip         |
+| `data-branding-logo`   | URL                                 | —                  | Logo URL shown in footer branding strip           |
+| `data-ui-config`       | JSON string                         | —                  | Full `uiConfig` object (see section 4)            |
 
 ---
 
@@ -312,27 +311,47 @@ If your site already has a `data-theme` attribute on `<html>` and you use CSS va
 
 ---
 
-## 8. Markdown paste
+## 8. Markdown paste reference
 
 When you paste Markdown text into the editor, it is automatically converted. Supported syntax:
 
-| Markdown | Result |
-|---|---|
-| `# Heading` | H1 |
-| `## Heading` | H2 |
-| `### Heading` | H3 |
-| `**bold**` | Bold |
-| `*italic*` or `_italic_` | Italic |
-| `` `code` `` | Inline code |
-| `~~strike~~` | Strikethrough |
-| `> quote` | Blockquote |
-| `- item` or `* item` | Bullet list |
-| `1. item` | Numbered list |
-| `- [ ] task` | Unchecked task |
-| `- [x] task` | Checked task |
-| `---` | Horizontal divider |
-| ` ```lang ` | Code block |
-| `\| col \| col \|` table | Table |
+
+| Markdown syntax        | Result in editor        |
+|------------------------|-------------------------|
+| `# Heading`            | H1                      |
+| `## Heading`           | H2                      |
+| `### Heading`          | H3                      |
+| `**bold**`             | Bold                    |
+| `*italic*` / `_italic_`| Italic                  |
+| `` `code` ``           | Inline code             |
+| `~~strike~~`           | Strikethrough           |
+| `> quote`              | Blockquote              |
+| `- item` / `* item`   | Bullet list             |
+| `1. item`              | Numbered list           |
+| `- [ ] task`           | Unchecked task item     |
+| `- [x] task`           | Checked task item       |
+| `---`                  | Horizontal divider      |
+| ` ```lang `            | Code block              |
+| `\| col \| col \|`     | Table with header row   |
+
+---
+
+## 9. Keyboard shortcuts
+
+| Shortcut          | Action             |
+|-------------------|--------------------|
+| `Ctrl+B`          | Bold               |
+| `Ctrl+I`          | Italic             |
+| `Ctrl+U`          | Underline          |
+| `Ctrl+\``         | Inline code        |
+| `Ctrl+Shift+S`    | Strikethrough      |
+| `Ctrl+,`          | Subscript          |
+| `Ctrl+.`          | Superscript        |
+| `Ctrl+Z`          | Undo               |
+| `Ctrl+Y`          | Redo               |
+| `Ctrl+Shift+Z`    | Redo               |
+| `F11`             | Toggle fullscreen  |
+| `Escape`          | Exit fullscreen / close sub-toolbar |
 
 ---
 

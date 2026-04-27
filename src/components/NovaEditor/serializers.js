@@ -53,6 +53,11 @@ const serializeNode = (node) => {
     case "table-body":      return `<tbody>${children}</tbody>`
     case "table-row":       return `<tr>${children}</tr>`
     case "table-cell":      return node.header ? `<th>${children}</th>` : `<td>${children}</td>`
+    case "link":
+      return `<a href="${node.href}"${node.target === "_blank" ? ' target="_blank" rel="noopener noreferrer"' : ""}>${children}</a>`
+
+    case "image":
+      return `<img src="${node.src}" alt="${node.alt || ""}">`
     default:                return children.trim() ? `<p>${children}</p>` : ""
   }
 }
@@ -200,6 +205,21 @@ const parseHTMLElement = (el) => {
       }
       return tableChildren.length > 0 ? { type: "table", children: tableChildren } : null
     }
+    case "a":
+      return {
+        type:     "link",
+        href:     el.getAttribute("href") || "",
+        target:   el.getAttribute("target") || "_self",
+        children: parseInlineHTML(el),
+      }
+
+    case "img":
+      return {
+        type:     "image",
+        src:      el.getAttribute("src") || "",
+        alt:      el.getAttribute("alt") || "",
+        children: [{ text: "" }],
+      }
     default: {
       const styleAttr  = el.getAttribute("style") || ""
       const alignMatch = styleAttr.match(/text-align:\s*(\w+)/)

@@ -6,6 +6,70 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [2.4.0] — 2026-04-27
+
+### Added
+- **Insert group** — new `insert` toolbar group with its own trigger button,
+  containing Link, Image, Special Characters, and Emoji tools.
+- **Link insertion** (`tools/LinkTool.jsx`) — inline form in the Insert
+  sub-toolbar with href, optional display text, and new-tab toggle.
+  Detects existing links and shows edit/remove controls. Renders as an
+  inline Slate node; serialises to `<a href="..." target="...">`.
+- **Image insertion** (`tools/ImageTool.jsx`) — URL + alt text form.
+  Renders as a void block element; serialises to `<img src="..." alt="...">`.
+  File upload reserved for a future version.
+- **Special characters** (`tools/SpecialChars.jsx`) — categorised scrollable
+  grid (Common, Punctuation, Currency, Arrows, Math, Latin). Inserts Unicode
+  character directly at cursor via `insertText`.
+- **Emoji picker** (`tools/EmojiPicker.jsx`) — categorised grid with category
+  search. 8 categories, ~240 emojis. Inserts at cursor via `insertText`.
+- `link` and `image` Slate element types added to `Element` renderer,
+  `serializers.js`, and `parseHTMLToSlate`.
+
+### Changed
+- `presets.js` — `standard` preset now includes `["link", "image"]` in
+  the insert group. `full` preset includes all four insert tools.
+- `isVoid` in editor now includes `"image"` alongside `"horizontal-rule"`.
+
+---
+
+## [2.3.2] — 2026-04-26
+
+### Changed
+- **Toolbar architecture simplified** — the right cluster (undo/redo/fullscreen)
+  is now a `⋮` group trigger button like all other groups, opening a sub-toolbar
+  panel on click. This eliminates all dynamic width measurement and the
+  ResizeObserver-based two-row detection entirely.
+- **`useToolbarCollapse`** reduced to a single `useRef` return — no state,
+  no effects, no measurement logic.
+- **Removed** `.ne-toolbar-cluster`, `.ne-toolbar-collapsible`,
+  `.ne-toolbar--two-row` and all associated CSS.
+- **Settings slot** in the cluster sub-toolbar remains reserved for v2.5.0.
+
+---
+
+## [2.3.1] — 2026-04-26
+
+### Fixed
+- **Sub-toolbar hidden behind sticky toolbar** — the sticky target is now
+  `.ne-toolbar-wrap` (which contains both the main bar and all sub-toolbar
+  panels) rather than `.ne-toolbar` alone. Sub-toolbars now scroll with the
+  toolbar as a unit and are always accessible when the toolbar is sticky.
+- **Colour picker panel clipped by sub-toolbar** — `.ne-sub-toolbar--open`
+  now sets `overflow: visible` so the absolutely positioned colour panel
+  escapes the sub-toolbar bounds correctly.
+- **Colour picker panel opening upward** — panel now opens downward with
+  `z-index: 500`, clearing the sticky toolbar-wrap (`z-index: 20`).
+- **Subscript + superscript stacking** — `toggleMark` now explicitly removes
+  the opposing mark before applying either subscript or superscript.
+- **Clear Formatting incomplete** — now iterates all text nodes in the full
+  selection range to collect every mark key, rather than reading only from
+  `Editor.marks()` at the cursor point.
+- **Font select option contrast** — forced explicit `background` and `color`
+  on `<option>` elements to override OS-level system dark theme rendering.
+
+---
+
 ## [2.3.0] — 2026-04-26
 
 ### Added

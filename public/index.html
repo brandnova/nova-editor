@@ -7,7 +7,7 @@
   
   <!-- SEO & Social Media Meta Tags -->
   <title>Nova Editor | Rich Text Editor by Brand Nova</title>
-  <meta name="description" content="A configurable, themeable rich text editor. Drop-in for Django, plain HTML, and any web project." />
+  <meta name="description" content="A configurable, themeable rich text editor with responsive toolbar, rich formatting tools, link/image insertion, and a clean standalone build. Drop-in for any web project." />
   <meta name="author" content="Brand Nova" />
   <meta name="keywords" content="rich text editor, wysiwyg, react editor, slate.js, django, javascript" />
   
@@ -356,7 +356,7 @@
           <div class="pg-title">Nova Editor</div>
           <div class="pg-sub">by Brand Nova</div>
         </div>
-        <span class="pg-badge">v2.0.0</span>
+        <span class="pg-badge">v2.4.0</span>
       </div>
       <div class="pg-header-actions">
         <a href="https://github.com/brandnova/nova-editor/" class="pg-gh-link" target="_blank" rel="noopener">
@@ -378,11 +378,13 @@
 
     <!-- Hero -->
     <section class="pg-hero">
-      <h2 class="pg-hero-title"><span>Brand Nova </span>Lightweight<br>Rich text editor.</h2>
+      <h2 class="pg-hero-title"><span>Brand Nova </span>Nova Editor</h2>
       <p class="pg-hero-desc">
-        Nova Editor is a drop-in rich text editor for any HTML-based web project.
-        Configurable themes, toolbar presets, Markdown paste support, and a clean standalone build.<br>
-        See the README or USAGE guide for setup instructions.
+        A drop-in rich text editor for any HTML-based web project.
+        Responsive toolbar with collapsing groups, rich formatting tools,
+        link and image insertion, Markdown paste, and 14 configurable themes.
+        See the <a href="https://github.com/brandnova/nova-editor/blob/main/README.md" style="color:#f59e0b;text-decoration:none">README</a> or
+        <a href="https://github.com/brandnova/nova-editor/blob/main/USAGE.md" style="color:#f59e0b;text-decoration:none">USAGE guide</a> for setup instructions.
       </p>
       <div class="pg-hero-ctas">
         <a href="https://github.com/brandnova/nova-editor/" class="pg-gh-link" target="_blank" rel="noopener">
@@ -405,17 +407,20 @@
         <div class="pg-control">
           <span class="pg-control-label">UI Theme</span>
           <select id="cfg-ui-preset">
-            <option value="valiux"    selected>valiux (amber dark)</option>
-            <option value="clean">clean (amber light)</option>
-            <option value="utility">utility (compact)</option>
-            <option value="soft">soft (rounded)</option>
-            <option value="notion">notion (document)</option>
-            <option value="midnight">midnight (indigo dark)</option>
-            <option value="forest">forest (green serif)</option>
-            <option value="newsprint">newsprint (editorial)</option>
-            <option value="terminal">terminal (phosphor)</option>
-            <option value="social">social (blue rounded)</option>
-            <option value="aurora">aurora (teal dark)</option>
+            <option value="valiux-dark"    selected>valiux-dark (amber dark)</option>
+            <option value="valiux-light">valiux-light (amber light)</option>
+            <option value="base-light">base-light (neutral light)</option>
+            <option value="base-dark">base-dark (neutral dark)</option>
+            <option value="notion-light">notion-light (document)</option>
+            <option value="notion-dark">notion-dark (document dark)</option>
+            <option value="midnight-dark">midnight-dark (indigo dark)</option>
+            <option value="midnight-light">midnight-light (indigo light)</option>
+            <option value="forest-light">forest-light (green serif)</option>
+            <option value="forest-dark">forest-dark (green dark)</option>
+            <option value="aurora-dark">aurora-dark (teal dark)</option>
+            <option value="newsprint-light">newsprint-light (editorial)</option>
+            <option value="social-light">social-light (blue rounded)</option>
+            <option value="terminal-dark">terminal-dark (phosphor green)</option>
           </select>
         </div>
 
@@ -428,17 +433,6 @@
           </select>
         </div>
 
-        <div class="pg-control">
-          <span class="pg-control-label">Color Mode</span>
-          <select id="cfg-color-mode">
-            <option value="dark" selected>dark</option>
-            <option value="light">light</option>
-            <option value="system">system</option>
-          </select>
-        </div>
-
-        <div class="pg-control"><span class="pg-control-label">Glass Effect</span>
-          <button class="pg-toggle on" id="tog-glass">✓ On</button></div>
         <div class="pg-control"><span class="pg-control-label">Word Count</span>
           <button class="pg-toggle on" id="tog-wordcount">✓ On</button></div>
         <div class="pg-control"><span class="pg-control-label">Sticky Toolbar</span>
@@ -483,6 +477,8 @@
         <div class="pg-kbd-row"><kbd>Ctrl+U</kbd><span class="pg-kbd-label">Underline</span></div>
         <div class="pg-kbd-row"><kbd>Ctrl+`</kbd><span class="pg-kbd-label">Inline Code</span></div>
         <div class="pg-kbd-row"><kbd>Ctrl+Shift+S</kbd><span class="pg-kbd-label">Strikethrough</span></div>
+        <div class="pg-kbd-row"><kbd>Ctrl+,</kbd><span class="pg-kbd-label">Subscript</span></div>
+        <div class="pg-kbd-row"><kbd>Ctrl+.</kbd><span class="pg-kbd-label">Superscript</span></div>
         <div class="pg-kbd-row"><kbd>Ctrl+Z</kbd><span class="pg-kbd-label">Undo</span></div>
         <div class="pg-kbd-row"><kbd>Ctrl+Y</kbd><span class="pg-kbd-label">Redo</span></div>
         <div class="pg-kbd-row"><kbd>F11</kbd><span class="pg-kbd-label">Fullscreen</span></div>
@@ -499,10 +495,8 @@
   <script>
     // ── State ──────────────────────────────────────────────────────────────────
     const state = {
-      uiPreset:  "valiux",
+      uiPreset:  "valiux-dark",
       toolbar:   "full",
-      colorMode: "dark",
-      glass:     true,
       wordCount: true,
       sticky:    true,
       branding:  true,
@@ -519,16 +513,13 @@
         document.getElementById("nova-editor-mount").innerHTML = ""
       }
 
-      const uiConfig = { preset: state.uiPreset, glass: state.glass }
+      const uiConfig = { preset: state.uiPreset }
       if (state.radius)    { uiConfig.borders = { ...(uiConfig.borders||{}), radius:    state.radius }    }
       if (state.radiusBtn) { uiConfig.borders = { ...(uiConfig.borders||{}), radiusBtn: state.radiusBtn } }
 
       editorInstance = window.NovaEditor.init({
         elementId:     "nova-editor-mount",
-        preset:        state.uiPreset,
-        toolbar:       state.toolbar,
-        colorMode:     state.colorMode,
-        glass:         state.glass,
+        preset:        state.toolbar,
         showWordCount: state.wordCount,
         stickyToolbar: state.sticky,
         maxHeight:     state.maxHeight,
@@ -589,9 +580,7 @@
     document.addEventListener("DOMContentLoaded", () => {
       wireSelect("cfg-ui-preset",  "uiPreset")
       wireSelect("cfg-toolbar",    "toolbar")
-      wireSelect("cfg-color-mode", "colorMode")
 
-      wireToggle("tog-glass",     "glass")
       wireToggle("tog-wordcount", "wordCount")
       wireToggle("tog-sticky",    "sticky")
       wireToggle("tog-branding",  "branding")
