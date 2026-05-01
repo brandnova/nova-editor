@@ -1,52 +1,44 @@
 import { useState, useRef, useEffect } from "react"
-import { useSlate } from "slate-react"
 import { Transforms } from "slate"
+import { ReactEditor } from "slate-react"
 import { ImageIcon, Plus } from "lucide-react"
 
-/**
- * ImageTool
- *
- * URL-based image insertion. Renders as a void block element.
- * Serialises to: <img src="..." alt="...">
- * File upload can be added in a future version by replacing/extending
- * the URL input with a file picker that converts to base64 or a presigned URL.
- */
+const ImageTool = ({ onClose, editor, savedSelectionRef }) => {
+  const [src,   setSrc]   = useState("")
+  const [alt,   setAlt]   = useState("")
+  const [error, setError] = useState("")
+  const srcRef            = useRef(null)
 
-const ImageTool = ({ onClose }) => {
-  const editor    = useSlate()
-  const [src,    setSrc]    = useState("")
-  const [alt,    setAlt]    = useState("")
-  const [error,  setError]  = useState("")
-  const srcRef              = useRef(null)
-
-  useEffect(() => {
-    setTimeout(() => srcRef.current?.focus(), 50)
-  }, [])
+  useEffect(() => { setTimeout(() => srcRef.current?.focus(), 60) }, [])
 
   const handleSubmit = (e) => {
     e.preventDefault()
     const url = src.trim()
     if (!url) { setError("URL is required"); return }
-    if (!url.startsWith("http") && !url.startsWith("/") && !url.startsWith("data:")) {
-      setError("Enter a valid URL")
-      return
-    }
     setError("")
 
-    Transforms.insertNodes(editor, {
-      type:     "image",
-      src:      url,
-      alt:      alt.trim() || "",
-      children: [{ text: "" }],
-    })
+    const saved = savedSelectionRef?.current
 
-    // Insert a paragraph after the image so the cursor has somewhere to go
-    Transforms.insertNodes(editor, {
-      type: "paragraph",
-      children: [{ text: "" }],
-    })
+    // Restore focus and selection before inserting
+    try {
+      ReactEditor.focus(editor)
+      if (saved) Transforms.select(editor, saved)
+    } catch { /* ignore */ }
 
-    onClose?.()
+    setTimeout(() => {
+      Transforms.insertNodes(editor, {
+        type:     "image",
+        src:      url,
+        alt:      alt.trim() || "",
+        children: [{ text: "" }],
+      })
+      // Insert paragraph after so cursor has somewhere to go
+      Transforms.insertNodes(editor, {
+        type:     "paragraph",
+        children: [{ text: "" }],
+      })
+      onClose?.()
+    }, 10)
   }
 
   return (
@@ -83,10 +75,9 @@ const ImageTool = ({ onClose }) => {
         </div>
 
         <div className="ne-insert-field ne-insert-field--row">
-          <span className="ne-insert-hint">File upload coming in a future version</span>
+          <span className="ne-insert-hint">File upload in a future version</span>
           <button type="submit" className="ne-insert-submit">
-            <Plus />
-            Insert
+            <Plus /> Insert
           </button>
         </div>
       </form>

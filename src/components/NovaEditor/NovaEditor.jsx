@@ -133,8 +133,12 @@ const NovaEditor = ({
 
   const editor = useMemo(() => {
     const e = withHistory(withReact(createEditor()))
-    const { isVoid, normalizeNode } = e
+    const { isVoid, isInline, normalizeNode } = e
 
+    // Inline elements — Slate must know about these or it treats them as blocks
+    e.isInline = (el) => el.type === "link" ? true : isInline(el)
+
+    // Void elements — no editable content inside
     e.isVoid = (el) =>
       el.type === "horizontal-rule" || el.type === "image"
         ? true
@@ -149,8 +153,11 @@ const NovaEditor = ({
       }
       normalizeNode([node, path])
     }
+
     return e
   }, [])
+
+  const savedSelectionRef = useRef(null)
 
   // ── Custom fullscreen (CSS-based, no native API) ───────────────────────────
   // Using native requestFullscreen() breaks portals and theme var inheritance.
@@ -177,6 +184,7 @@ const NovaEditor = ({
 
   const handleChange = useCallback((newValue) => {
     setValue(newValue)
+    savedSelectionRef.current = editor.selection
     const plain = newValue
       .map(n => SlateElement.isElement(n)
         ? n.children.map(c => Text.isText(c) ? c.text : "").join("")
@@ -286,7 +294,16 @@ const NovaEditor = ({
       data-ne-theme={isDark ? "dark" : "light"}
       style={resolved.cssVars}
     >
-      <div className={containerClass} style={containerStyle}>
+      <div
+          className={containerClass}
+          style={containerStyle}
+          onMouseDown={() => {
+            // Save selection before any toolbar button can steal focus
+            if (editor.selection) {
+              savedSelectionRef.current = editor.selection
+            }
+          }}
+        >
         <Slate editor={editor} initialValue={value} onValueChange={handleChange}>
 
           <Toolbar
@@ -294,6 +311,7 @@ const NovaEditor = ({
             isFullscreen={isFullscreen}
             compact={resolved.compact}
             onToggleFullscreen={toggleFullscreen}
+            savedSelectionRef={savedSelectionRef}
           />
 
           <div
@@ -361,18 +379,35 @@ const Element = ({ attributes, children, element }) => {
       )
     case "image":
       return (
-        <div {...attributes} contentEditable={false} style={{ userSelect: "none", margin: "0.75rem 0" }}>
+        <div
+          {...attributes}
+          contentEditable={false}
+          style={{ userSelect: "none", margin: "0.75rem 0" }}
+        >
           <img
             src={element.src}
             alt={element.alt || ""}
             style={{
-              maxWidth:     "100%",
-              height:       "auto",
-              borderRadius: "clamp(2px, var(--ne-radius-btn), 8px)",
-              display:      "block",
+              maxWidth:        "100%",
+              height:          "auto",
+              borderRadius:    "clamp(2px, var(--ne-radius-btn), 8px)",
+              display:         "block",
+              backgroundColor: "var(--ne-hover)",
+              minHeight:       "40px",
             }}
-            onError={e => { e.target.style.opacity = "0.3" }}
           />
+          {element.alt && (
+            <span style={{
+              display:    "block",
+              fontSize:   "0.75em",
+              color:      "var(--ne-text-muted)",
+              fontStyle:  "italic",
+              marginTop:  "0.25rem",
+              textAlign:  "left",   /* was "center" — now left-aligned under image */
+            }}>
+              {element.alt}
+            </span>
+          )}
           {children}
         </div>
       )

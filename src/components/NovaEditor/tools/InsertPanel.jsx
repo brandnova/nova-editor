@@ -21,7 +21,7 @@ const TOOL_DEFS = [
   { key: "emoji",        label: "Emoji",            Icon: Smile     },
 ]
 
-const InsertPanel = ({ tools = [], onClose }) => {
+const InsertPanel = ({ tools = [], onClose, editor, savedSelectionRef }) => {
   // Only show tabs for tools that are configured in this preset
   const activeDefs = TOOL_DEFS.filter(d => tools.includes(d.key))
 
@@ -33,8 +33,22 @@ const InsertPanel = ({ tools = [], onClose }) => {
 
   const renderTool = () => {
     switch (selected) {
-      case "link":         return <LinkTool     onClose={onClose} />
-      case "image":        return <ImageTool    onClose={onClose} />
+      case "link":
+        return (
+          <LinkTool
+            onClose={onClose}
+            editor={editor}
+            savedSelectionRef={savedSelectionRef}
+          />
+        )
+      case "image":
+        return (
+          <ImageTool
+            onClose={onClose}
+            editor={editor}
+            savedSelectionRef={savedSelectionRef}
+          />
+        )
       case "specialChars": return <SpecialChars />
       case "emoji":        return <EmojiPicker  />
       default:             return null

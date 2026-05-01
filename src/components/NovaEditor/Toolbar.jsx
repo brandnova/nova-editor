@@ -72,6 +72,7 @@ const Toolbar = ({
   isFullscreen       = false,
   compact            = false,
   onToggleFullscreen,
+  savedSelectionRef,
 }) => {
   const editor         = useSlate()
   const { toolbarRef } = useToolbarCollapse()
@@ -326,7 +327,13 @@ const Toolbar = ({
         label={`${group.label} tools`}
       >
         {group.key === "insert"
-          ? <InsertPanel tools={toolbarConfig["insert"] || []} onClose={closeGroup} />
+          ? <InsertPanel
+              key={openGroup === "insert" ? "insert-open" : "insert-closed"}
+              tools={toolbarConfig["insert"] || []}
+              onClose={closeGroup}
+              editor={editor}
+              savedSelectionRef={savedSelectionRef}
+            />
           : group.isCluster
             ? renderClusterTools()
             : renderGroupTools(group.key)
