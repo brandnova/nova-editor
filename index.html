@@ -79,6 +79,29 @@
       transition: background 0.2s, color 0.2s;
     }
 
+    /* ── Stable select contrast — doesn't change with theme toggle ── */
+    .pg-control select {
+      background: #1e1e1e;
+      color: #e5e5e5;
+      border-color: rgba(255,255,255,0.15);
+    }
+
+    body[data-pg-light] .pg-control select {
+      background: #ffffff;
+      color: #1a1a1a;
+      border-color: #bababa;
+    }
+
+    .pg-control select option {
+      background: #1e1e1e;
+      color: #e5e5e5;
+    }
+
+    body[data-pg-light] .pg-control select option {
+      background: #ffffff;
+      color: #1a1a1a;
+    }
+
     /* ── Header ── */
     .pg-header {
       background: var(--pg-surface); border-bottom: 1px solid var(--pg-border);
@@ -519,7 +542,8 @@
 
       editorInstance = window.NovaEditor.init({
         elementId:     "nova-editor-mount",
-        preset:        state.toolbar,
+        uiPreset:      state.uiPreset,
+        toolbar:       state.toolbar,
         showWordCount: state.wordCount,
         stickyToolbar: state.sticky,
         maxHeight:     state.maxHeight,
