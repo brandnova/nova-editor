@@ -25,13 +25,22 @@ const DEFAULT_OPTIONS = {
   onHTMLChange:  null,
 }
 
+const decodeHTMLAttribute = (value = "") => {
+  return value
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&amp;/g, "&")
+}
+
 window.NovaEditor = {
   init(options = {}) {
     const cfg = { ...DEFAULT_OPTIONS, ...options }
 
-    const element = document.getElementById(cfg.elementId)
+    const element = cfg.element || document.getElementById(cfg.elementId)
     if (!element) {
-      console.error(`[NovaEditor] Element #${cfg.elementId} not found`)
+      console.error(`[NovaEditor] Element ${cfg.elementId ? `#${cfg.elementId}` : "(none)"} not found`)
       return null
     }
 
@@ -89,7 +98,7 @@ window.NovaEditor = {
 
 // ── Auto-init ──────────────────────────────────────────────────────────────────
 
-document.addEventListener("DOMContentLoaded", () => {
+const mountAutoEditors = () => {
   document.querySelectorAll("[data-nova-editor]").forEach(el => {
     const d = el.dataset
 
@@ -104,8 +113,8 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     window.NovaEditor.init({
-      elementId:     el.id,
-      initialHTML:   d.initialHtml  || "",
+      element:       el,
+      initialHTML:   decodeHTMLAttribute(d.initialHtml || ""),
       uiPreset:      d.uiPreset     || "valiux",
       toolbar:       d.toolbar      || "full",
       colorMode:     d.colorMode    || "dark",
@@ -114,7 +123,7 @@ document.addEventListener("DOMContentLoaded", () => {
       placeholder:   d.placeholder  || "Start writing…",
       showWordCount: d.showWordCount !== "false",
       stickyToolbar: d.stickyToolbar !== "false",
-      maxHeight:     d.maxHeight    ? parseInt(d.maxHeight) : null,
+      maxHeight:     d.maxHeight    ? parseInt(d.maxHeight, 10) : null,
       autoFocus:     d.autoFocus    === "true",
       outputFormat:  d.outputFormat || "html",
       hiddenInputId: d.hiddenInput  || null,
@@ -122,4 +131,10 @@ document.addEventListener("DOMContentLoaded", () => {
       uiConfig,
     })
   })
-})
+}
+
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", mountAutoEditors)
+} else {
+  mountAutoEditors()
+}

@@ -6,6 +6,19 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [2.4.1] — 2026-05-28
+
+### Fixed
+- **CSS isolation** — removed `@tailwind base`, `@tailwind components`, and `@tailwind utilities` directives from `index.css`. These were injecting a global Tailwind preflight reset that conflicted with any host project also using Tailwind. The editor stylesheet is now fully self-contained with no global side effects.
+- **Google Fonts `@import`** — moved from `index.css` (which ships in the standalone bundle) to `playground.css` (dev only). Host projects and standalone users no longer have an unwanted font request injected.
+- **Pre-fill HTML cleaning** — `parseHTMLToSlate` now runs a cleaning pass before parsing, handling double-encoded entities, smart quotes, and `&nbsp;` runs produced by Django's template engine and paste from Word/Google Docs.
+- **Django `initialHTML` quoting** — documented and enforced the correct pattern: use `{{ object.body|escapejs }}` in a JS string rather than `data-initial-html="{{ object.body }}"` as an HTML attribute, which breaks when the content contains double quotes.
+- **Standalone auto-init HTML decoding** — the `data-initial-html` attribute reader now decodes common HTML entity encoding that template engines apply to attribute values.
+- **Standalone integration** — `dist-standalone` now uses a relative asset base path for the standalone bundle, allowing `nova-editor.css` and `nova-editor.umd.js` to work from any static path.
+- **Auto-init resilience** — the standalone auto-init now runs even if the script loads after `DOMContentLoaded`, and supports mounting via `element` as well as `elementId`.
+- **Django HTML loading** — `data-initial-html` decoding now handles common attribute encodings such as `&quot;`, `&lt;`, `&gt;`, and `&amp;`.
+- **Docs improved** — clarified Django integration, brand logos, and the fact that host Tailwind version mismatches do not affect the standalone editor.
+
 ## [2.4.0] — 2026-04-27
 
 ### Added

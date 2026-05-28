@@ -20,6 +20,8 @@ Then include them in your HTML `<head>`:
 <script src="/static/nova-editor/nova-editor.umd.js" defer></script>
 ```
 
+> Tip: Load the CSS before the JS and keep the editor styles in your page head. If the editor mount point is inserted dynamically after page load, use manual `NovaEditor.init(...)` instead of auto-init.
+
 ---
 
 ## 2. Auto-init with data attributes
@@ -36,6 +38,8 @@ The simplest approach. Add a `div` with `data-nova-editor` and the editor mounts
   data-placeholder="Write something…"
 ></div>
 ```
+
+> Note: `data-nova-editor` is an auto-init convenience layer. If your editor block is inserted later via partials, htmx, or dynamic JS, call `NovaEditor.init(...)` manually instead.
 
 ### All supported data attributes
 
@@ -56,6 +60,8 @@ The simplest approach. Add a `div` with `data-nova-editor` and the editor mounts
 | `data-branding-name`   | any string                          | —                  | Brand name shown in footer branding strip         |
 | `data-branding-logo`   | URL                                 | —                  | Logo URL shown in footer branding strip           |
 | `data-ui-config`       | JSON string                         | —                  | Full `uiConfig` object (see section 4)            |
+
+> Tip: If your page uses partial includes or dynamically loaded markup, prefer manual init with `element: document.getElementById('editor')` so the editor always mounts cleanly.
 
 ---
 
@@ -224,6 +230,15 @@ Pass existing HTML back in via `data-initial-html` (auto-init) or `initialHTML` 
 <script>
 NovaEditor.init({
   elementId:   "editor",
+  initialHTML: "{{ object.body|escapejs }}",
+  hiddenInputId: "body-field",
+})
+</script>
+
+<!-- If you do not want to add an `id`, you can pass the mount node directly: -->
+<script>
+const editor = NovaEditor.init({
+  element: document.getElementById("editor"),
   initialHTML: "{{ object.body|escapejs }}",
   hiddenInputId: "body-field",
 })

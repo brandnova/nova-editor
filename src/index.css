@@ -1,8 +1,8 @@
-@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
-
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+/* Nova Editor — self-contained editor stylesheet.
+ * Tailwind base/components/utilities are only loaded in the dev playground
+ * from src/playground.css. This file ships with the standalone editor bundle
+ * and must not inject global Tailwind preflight styles.
+ */
 
 /* ─────────────────────────────────────────────────────────────────────────────
    CSS Custom Properties — ALL values come from the active theme via inline
@@ -72,6 +72,13 @@
 /* ─────────────────────────────────────────────────────────────────────────────
    Root wrapper — receives all CSS vars as inline styles from the resolver
 ───────────────────────────────────────────────────────────────────────────── */
+
+.ne-root,
+.ne-root *,
+.ne-root *::before,
+.ne-root *::after {
+  box-sizing: border-box;
+}
 
 .ne-root {
   font-family: var(--ne-font);

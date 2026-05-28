@@ -106,64 +106,117 @@ export const NAMED_THEMES = {
    * valiux-dark / valiux-light — Amber accent, Brand Nova identity.
    * Keep for Valiux project use. Can be removed from public builds.
    */
-  "valiux-dark": {
-    colorMode: "dark",
-    colors: {
-      primary:      "#f59e0b",
-      primaryLight: "#fde68a",
-      primaryDark:  "#b45309",
-      primaryFg:    "#1c1008",
-    },
-    surfaces: {
-      bg:          "#0f0f0f",
-      toolbarBg:   "#141414",
-      border:      "rgba(245,158,11,0.15)",
-      text:        "#f5f0e8",
-      textMuted:   "#a1998c",
-      hover:       "rgba(245,158,11,0.1)",
-      activeBg:    "rgba(245,158,11,0.2)",
-      activeText:  "#fcd34d",
-    },
-    scrollbar: { thumb: "rgba(245,158,11,0.2)", hover: "rgba(245,158,11,0.4)" },
-    typography: {
-      font:       "'Syne', sans-serif",
-      monoFont:   "'JetBrains Mono', monospace",
-      fontSize:   "16px",
-      lineHeight: "1.75",
-    },
-    borders:  { radius: "0.75rem", radiusBtn: "0.375rem", width: "1px" },
-    toolbar:  { size: "2.25rem",   iconSize: "1rem",      compact: false },
-    shadow:   "0 4px 32px rgba(0,0,0,0.5)",
-  },
-
   "valiux-light": {
     colorMode: "light",
     colors: {
-      primary:      "#d97706",
-      primaryLight: "#fef3c7",
-      primaryDark:  "#92400e",
-      primaryFg:    "#ffffff",
+      // Matches --color-amber-mid (#B8841F) as the primary action colour —
+      // readable on paper surfaces, matches the grad-amber CTA shade.
+      primary:      "#B8841F",
+      // Matches --color-amber (#D4A23C) — used for hover tints and light surfaces.
+      primaryLight: "rgba(212,162,60,0.12)",
+      // Matches --color-amber-deep (#8C6418) — text on amber backgrounds.
+      primaryDark:  "#8C6418",
+      // --color-cream — text on amber-coloured buttons.
+      primaryFg:    "#FEF9EF",
     },
     surfaces: {
-      bg:          "#fffbeb",
-      toolbarBg:   "#fef3c7",
-      border:      "#fcd34d",
-      text:        "#1c1917",
-      textMuted:   "#78716c",
-      hover:       "#fde68a",
-      activeBg:    "#fcd34d",
-      activeText:  "#78350f",
+      // --color-paper — matches the site's base page background.
+      bg:          "#FDFAF4",
+      // --color-paper-warm — toolbar background, one step warmer than the page.
+      toolbarBg:   "#FAF5E8",
+      // Matches the site's standard border: rgba(30,24,16,0.10).
+      border:      "rgba(30,24,16,0.10)",
+      // --color-ink-900 — primary text.
+      text:        "#1E1810",
+      // --color-muted — placeholder and secondary labels.
+      textMuted:   "rgba(30,24,16,0.38)",
+      // Matches the site's hover tint on cards and buttons.
+      hover:       "rgba(212,162,60,0.08)",
+      // Matches the active chip/button background.
+      activeBg:    "rgba(212,162,60,0.16)",
+      // --color-amber-deep — active icon/text colour.
+      activeText:  "#8C6418",
     },
-    scrollbar: { thumb: "rgba(217,119,6,0.25)", hover: "rgba(217,119,6,0.45)" },
+    scrollbar: {
+      thumb: "rgba(30,24,16,0.12)",
+      hover: "rgba(30,24,16,0.22)",
+    },
     typography: {
-      font:       "'Syne', sans-serif",
-      monoFont:   "'JetBrains Mono', monospace",
+      // The editor content font matches the site's body font.
+      font:       "'Inter', system-ui, -apple-system, sans-serif",
+      monoFont:   "ui-monospace, 'JetBrains Mono', SFMono-Regular, monospace",
       fontSize:   "16px",
-      lineHeight: "1.75",
+      lineHeight: "1.8",
     },
-    borders:  { radius: "0.75rem", radiusBtn: "0.375rem", width: "1px" },
-    toolbar:  { size: "2.25rem",   iconSize: "1rem",      compact: false },
-    shadow:   "0 4px 24px rgba(217,119,6,0.12)",
+    borders: {
+      // Matches the 12px border-radius used on .input-field and .auth-input.
+      radius:    "0.75rem",
+      radiusBtn: "0.5rem",
+      width:     "1.5px",
+    },
+    toolbar: {
+      // Slightly larger touch targets, matching the site's button sizing.
+      size:     "2.25rem",
+      iconSize: "0.9375rem",
+      compact:  false,
+    },
+    // Matches the focus ring style used on .input-field — amber glow.
+    shadow: "0 2px 12px -4px rgba(30,24,16,0.08), 0 0 0 0 rgba(212,162,60,0)",
+  },
+
+  "valiux-dark": {
+    colorMode: "dark",
+    colors: {
+      // Lighter amber for legibility on dark surfaces.
+      primary:      "#D4A23C",
+      // Subtle amber tint on dark bg — matches auth panel hover states.
+      primaryLight: "rgba(212,162,60,0.15)",
+      // Slightly lighter for text use on dark.
+      primaryDark:  "#E6B84A",
+      // Dark ink on amber buttons — matches --color-ink-900.
+      primaryFg:    "#1E1810",
+    },
+    surfaces: {
+      // Matches --color-canvas-mid from the auth panel ambient background.
+      bg:          "#100800",
+      // One step lighter for toolbar separation.
+      toolbarBg:   "#1A0E00",
+      // Matches the auth dark panel's border token.
+      border:      "rgba(212,162,60,0.15)",
+      // Warm off-white — matches the panel-quote colour.
+      text:        "rgba(254,249,239,0.88)",
+      // Muted warm text — matches textMuted on dark surfaces.
+      textMuted:   "rgba(254,249,239,0.38)",
+      // Matches dark panel hover states from auth page.
+      hover:       "rgba(212,162,60,0.10)",
+      // Matches dark panel active states.
+      activeBg:    "rgba(212,162,60,0.20)",
+      // Active amber text on dark.
+      activeText:  "#D4A23C",
+    },
+    scrollbar: {
+      thumb: "rgba(212,162,60,0.18)",
+      hover: "rgba(212,162,60,0.35)",
+    },
+    typography: {
+      font:       "'Inter', system-ui, -apple-system, sans-serif",
+      monoFont:   "ui-monospace, 'JetBrains Mono', SFMono-Regular, monospace",
+      fontSize:   "16px",
+      lineHeight: "1.8",
+    },
+    borders: {
+      radius:    "0.75rem",
+      radiusBtn: "0.5rem",
+      // Slightly heavier border on dark to maintain visibility.
+      width:     "1px",
+    },
+    toolbar: {
+      size:     "2.25rem",
+      iconSize: "0.9375rem",
+      compact:  false,
+    },
+    // Deep amber glow — matches the auth panel card shadow depth.
+    shadow: "0 8px 40px -8px rgba(0,0,0,0.60), 0 0 0 1px rgba(212,162,60,0.10)",
   },
 
   // ── Notion-inspired ─────────────────────────────────────────────────────────

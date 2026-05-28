@@ -230,10 +230,27 @@ const parseHTMLElement = (el) => {
   }
 }
 
+const cleanIncomingHTML = (html) => {
+  if (!html || typeof html !== "string") return ""
+
+  return html
+    .replace(/&amp;/g, "&")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&nbsp;/g, " ")
+    .replace(/&#39;/g, "'")
+    .replace(/&quot;/g, '"')
+    .replace(/[\u2018\u2019]/g, "'")
+    .replace(/[\u201C\u201D]/g, '"')
+    .replace(/(\s*\u00A0\s*)+/g, " ")
+    .trim()
+}
+
 export const parseHTMLToSlate = (html) => {
-  if (!html?.trim()) return [{ type: "paragraph", children: [{ text: "" }] }]
+  const cleaned = cleanIncomingHTML(html)
+  if (!cleaned) return [{ type: "paragraph", children: [{ text: "" }] }]
   const div = document.createElement("div")
-  div.innerHTML = html
+  div.innerHTML = cleaned
   const nodes = Array.from(div.children).map(parseHTMLElement).filter(Boolean)
   return nodes.length > 0 ? nodes : [{ type: "paragraph", children: [{ text: "" }] }]
 }
